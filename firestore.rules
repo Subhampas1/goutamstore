@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Rules for the 'users' collection
+    match /users/{userId} {
+      // Admins can read the full list of users.
+      allow list: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+
+      // A user can create their own document (for signup).
+      allow create: if request.auth.uid != null;
+      
+      // A user can read/update their own document.
+      // An admin can read/update any user document.
+      allow read, update: if request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+
+      // No one can delete user documents from the client.
+      allow delete: if false;
+    }
+
+    // Rules for the 'products' collection
+    match /products/{productId} {
+      // Anyone can view the products on the store.
+      allow read, list: if true;
+
+      // Only admins can create, update, or delete products.
+      allow create, update, delete: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Rules for the 'orders' collection
+    match /orders/{orderId} {
+      // A user can create their own order.
+      allow create: if request.auth.uid == request.resource.data.userId;
+
+      // An admin can list all orders. A user can read their own order.
+      allow list: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow read: if request.auth.uid == resource.data.userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      
+      // No one can update or delete orders from the client side for now.
+      allow update, delete: if false;
+    }
+  }
+}
