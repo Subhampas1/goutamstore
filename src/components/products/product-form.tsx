@@ -45,7 +45,7 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
   const { toast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const [inputValue, setInputValue] = useState("");
+  const [newCategoryValue, setNewCategoryValue] = useState('');
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -63,32 +63,35 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
   })
 
   useEffect(() => {
-    if (product) {
-      form.reset({
-        name_en: product.name.en,
-        name_hi: product.name.hi,
-        description_en: product.description?.en || '',
-        description_hi: product.description?.hi || '',
-        price: product.price,
-        category: product.category,
-        unit: product.unit || 'pc',
-        image: product.image,
-        available: product.available,
-      })
-    } else {
-      form.reset({
-        name_en: '',
-        name_hi: '',
-        description_en: '',
-        description_hi: '',
-        price: 0,
-        category: '',
-        unit: 'pc',
-        image: '',
-        available: true,
-      })
+    if (isOpen) {
+        if (product) {
+        form.reset({
+            name_en: product.name.en,
+            name_hi: product.name.hi,
+            description_en: product.description?.en || '',
+            description_hi: product.description?.hi || '',
+            price: product.price,
+            category: product.category,
+            unit: product.unit || 'pc',
+            image: product.image,
+            available: product.available,
+        })
+        } else {
+        form.reset({
+            name_en: '',
+            name_hi: '',
+            description_en: '',
+            description_hi: '',
+            price: 0,
+            category: '',
+            unit: 'pc',
+            image: '',
+            available: true,
+        })
+        }
+        setIsSaving(false)
+        setNewCategoryValue('')
     }
-    setIsSaving(false)
   }, [product, form, isOpen])
 
   async function onSubmit(values: ProductFormValues) {
@@ -204,21 +207,24 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
                     </PopoverTrigger>
                     <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                        <Command>
-                        <CommandInput 
-                          placeholder="Search or create category..." 
-                          value={inputValue}
-                          onValueChange={setInputValue}
+                        <CommandInput
+                          placeholder="Search or create category..."
+                          value={newCategoryValue}
+                          onValueChange={setNewCategoryValue}
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter' && inputValue && !categories.includes(inputValue)) {
+                             if (e.key === 'Enter' && newCategoryValue && !categories.find(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) {
                               e.preventDefault();
-                              form.setValue("category", inputValue);
+                              form.setValue("category", newCategoryValue);
                               setIsPopoverOpen(false);
                             }
                           }}
                         />
                         <CommandList>
-                            <CommandEmpty>
-                                {inputValue ? `No category found. Press Enter to create "${inputValue}".` : "No category found."}
+                            <CommandEmpty onSelect={() => {
+                                form.setValue("category", newCategoryValue);
+                                setIsPopoverOpen(false);
+                            }}>
+                                {`No category found. Press Enter to create "${newCategoryValue}".`}
                             </CommandEmpty>
                             <CommandGroup>
                             {categories.map((category) => (
@@ -227,7 +233,6 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
                                 key={category}
                                 onSelect={() => {
                                     form.setValue("category", category);
-                                    setInputValue(category);
                                     setIsPopoverOpen(false);
                                 }}
                                 >
@@ -347,3 +352,5 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
     </Dialog>
   )
 }
+
+    
