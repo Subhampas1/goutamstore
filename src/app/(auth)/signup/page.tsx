@@ -14,7 +14,7 @@ import { useCartStore } from '@/hooks/use-cart-store'
 import { useToast } from "@/hooks/use-toast"
 import { auth, db } from '@/lib/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { setDoc, doc, getDocs, collection, query, where, limit, runTransaction } from 'firebase/firestore'
+import { setDoc, doc, collection, query, limit, runTransaction } from 'firebase/firestore'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -41,9 +41,18 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      // For simplicity and to resolve the error, we'll default all new users to 'user'.
-      // The logic to determine the first user needs to be revisited.
-      const role = 'user'
+      const role = await runTransaction(db, async (transaction) => {
+        const usersCollectionRef = collection(db, "users");
+        // We query for 2 users. If we get back 0 or 1, this new user is the first.
+        const existingUsersQuery = query(usersCollectionRef, limit(2));
+        const existingUsersSnapshot = await transaction.get(existingUsersQuery);
+        
+        // If there's 1 or 0 docs, this is the first user account being created.
+        if (existingUsersSnapshot.size <= 1) {
+            return 'admin';
+        }
+        return 'user';
+      });
 
       // Create the user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
@@ -59,11 +68,14 @@ export default function SignupPage() {
       
       toast({
         title: "Account Created",
-        description: "Welcome to Goutam Store!",
+        description: `Welcome! You have been assigned the ${role} role.`,
       })
       
-      // All users are redirected to the homepage after signup.
-      router.push('/')
+      if (role === 'admin') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/');
+      }
 
     } catch (error: any) {
        console.error(error)
@@ -71,7 +83,7 @@ export default function SignupPage() {
         title: "Sign Up Failed",
         description: error.code === 'auth/email-already-in-use'
           ? 'This email is already registered. Please log in.'
-          : error.message,
+          : 'An unexpected error occurred. Please try again.',
         variant: "destructive",
       })
     }
