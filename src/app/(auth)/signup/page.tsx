@@ -14,7 +14,7 @@ import { useCartStore } from '@/hooks/use-cart-store'
 import { useToast } from "@/hooks/use-toast"
 import { auth, db } from '@/lib/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { setDoc, doc, getDocs, collection, query, limit } from 'firebase/firestore'
+import { setDoc, doc, getDocs, collection, query, limit, runTransaction } from 'firebase/firestore'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -38,17 +38,19 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
     try {
-      // Check if any users exist to determine if this is the first signup
-      const usersQuery = query(collection(db, "users"), limit(1));
-      const existingUsersSnapshot = await getDocs(usersQuery);
-      const isFirstUser = existingUsersSnapshot.empty;
-      
-      const role = isFirstUser ? 'admin' : 'user';
-
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      // Ensure user document includes name, email, and the determined role
+      // Now that the user is created and logged in, determine their role.
+      // We use a transaction to safely check if they are the first user.
+      const role = await runTransaction(db, async (transaction) => {
+        const usersQuery = query(collection(db, "users"), limit(1));
+        const existingUsersSnapshot = await transaction.get(usersQuery);
+        const isFirstUser = existingUsersSnapshot.empty;
+        return isFirstUser ? 'admin' : 'user';
+      });
+
+      // Create the user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         name: values.name,
@@ -62,7 +64,7 @@ export default function SignupPage() {
       
       toast({
         title: "Account Created",
-        description: isFirstUser 
+        description: role === 'admin'
             ? "Welcome! As the first user, you have been assigned admin privileges."
             : "Welcome to Goutam Store!",
       })
