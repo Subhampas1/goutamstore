@@ -194,14 +194,14 @@ export default function AdminDashboardPage() {
 
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 h-[calc(100vh-8.5rem)] md:h-auto overflow-hidden">
       <ProductForm
         isOpen={isFormOpen}
         setIsOpen={setIsFormOpen}
         product={selectedProduct}
         categories={productCategories}
       />
-      <div className="grid gap-6">
+      <div className="grid gap-6 h-full overflow-y-auto pb-8">
         <Card>
           <CardHeader>
             <CardTitle className="font-headline text-2xl">Admin Dashboard</CardTitle>
@@ -231,8 +231,8 @@ export default function AdminDashboardPage() {
                 <Button onClick={handleAddProduct}><PlusCircle />Add Product</Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="overflow-auto max-h-[500px]">
+          <CardContent className="overflow-x-auto">
+            <div className="max-h-[500px] overflow-y-auto">
              {loading ? <p>Loading products...</p> : (
                <Table>
                   <TableHeader>
@@ -298,8 +298,8 @@ export default function AdminDashboardPage() {
             <CardTitle>User Management</CardTitle>
             <CardDescription>View and manage all registered users.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="overflow-auto max-h-[500px]">
+          <CardContent className="overflow-x-auto">
+            <div className="max-h-[500px] overflow-y-auto">
             {loading ? (
               <p>Loading users...</p>
             ) : (
