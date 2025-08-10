@@ -238,7 +238,7 @@ export default function ProfilePage() {
         <CardHeader className="items-center text-center">
           <div className="relative">
             <Avatar className="h-24 w-24 mb-4">
-              <AvatarImage src={previewUrl || userProfile?.photoURL || "https://placehold.co/100x100.png"} alt="User avatar" data-ai-hint="user avatar" />
+              <AvatarImage src={previewUrl || userProfile?.photoURL || "https://firebasestorage.googleapis.com/v0/b/goutam-store-3uiby.appspot.com/o/tiger.png?alt=media&token=17565511-3e45-4257-9f20-98b79b69c4e2"} alt="User avatar" data-ai-hint="tiger face" />
               <AvatarFallback>{userProfile?.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
              <Button
