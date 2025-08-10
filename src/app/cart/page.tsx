@@ -80,13 +80,7 @@ export default function CartPage() {
               orderId: nanoid(10),
               userId: auth.currentUser?.uid,
               items: cart.map(item => ({
-                  product: {
-                      id: item.product.id,
-                      name: item.product.name,
-                      price: item.product.price,
-                      image: item.product.image,
-                      unit: item.product.unit
-                  },
+                  product: item.product, // Use the full product object
                   quantity: item.quantity
               })),
               total: getCartTotal(),
@@ -110,6 +104,7 @@ export default function CartPage() {
           clearCart();
           router.push('/orders');
         } catch (error) {
+           console.error("Order save error:", error);
            toast({
               title: "Order Failed",
               description: "Could not save your order. Please contact support.",

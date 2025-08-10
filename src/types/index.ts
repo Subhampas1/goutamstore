@@ -1,4 +1,5 @@
 
+
 export type Product = {
   id: string;
   name: {
@@ -22,17 +23,8 @@ export type CartItem = {
   quantity: number;
 };
 
-// Simplified product for embedding in orders
-export type OrderProduct = {
-  id: string;
-  name: { en: string; hi: string; };
-  price: number;
-  image: string;
-  unit: 'kg' | 'L' | 'pc';
-}
-
 export type OrderItem = {
-  product: OrderProduct;
+  product: Product;
   quantity: number;
 }
 
