@@ -42,11 +42,11 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password)
       const user = userCredential.user
 
-      // The role for all new users will be 'user'.
+      // For all new users, the role will be 'user'.
       // The admin role can be assigned manually in the Firebase Console for security.
       const role = 'user'
 
-      // Step 2: Create the user document in Firestore with the authenticated user's UID.
+      // Step 2: Create the user document in Firestore.
       // This runs after the user is created and signed in, which satisfies security rules.
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
@@ -73,7 +73,7 @@ export default function SignupPage() {
         title: "Sign Up Failed",
         description: error.code === 'auth/email-already-in-use'
           ? 'This email is already registered. Please log in.'
-          : 'An unexpected error occurred. Please try again.',
+          : `An unexpected error occurred: ${error.message}`,
         variant: "destructive",
       })
     }
