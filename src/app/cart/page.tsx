@@ -319,11 +319,11 @@ export default function CartPage() {
                 ) : (
                   <div className="flex items-center justify-center gap-2">
                      <svg height="28" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="28" fontWeight="bold" fill="white">GPay</text>
+                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="bold" fill="white">GPay</text>
                     </svg>
                      <div className="w-px h-5 bg-primary-foreground/50"></div>
                      <svg height="28" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="28" fontWeight="bold" fill="white">PhonePe</text>
+                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="bold" fill="white">PhonePe</text>
                     </svg>
                   </div>
                 )}
