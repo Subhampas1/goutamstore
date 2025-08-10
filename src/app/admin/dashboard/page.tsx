@@ -247,7 +247,7 @@ export default function AdminDashboardPage() {
                     {filteredProducts.map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium whitespace-nowrap">{product.name.en}</TableCell>
-                        <TableCell>₹{product.price.toFixed(2)}</TableCell>
+                        <TableCell className="whitespace-nowrap">₹{product.price.toFixed(2)}</TableCell>
                         <TableCell>
                            <Switch
                                 id={`product-status-${product.id}`}
@@ -256,7 +256,7 @@ export default function AdminDashboardPage() {
                                 aria-label="Toggle product status"
                               />
                         </TableCell>
-                        <TableCell className="text-right space-x-2">
+                        <TableCell className="text-right space-x-2 whitespace-nowrap">
                             <Button variant="outline" size="icon" onClick={() => handleEditProduct(product)}>
                               <Pencil className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
@@ -323,7 +323,7 @@ export default function AdminDashboardPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex items-center justify-end gap-2 whitespace-nowrap">
                              <Switch
                                 id={`status-${user.id}`}
                                 checked={!user.disabled}
