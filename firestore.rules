@@ -3,26 +3,39 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only read and update their own profiles
+
+    // Helper function to check for admin role
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     match /users/{userId} {
-      allow read: if request.auth.uid == userId || (request.auth.token.role == 'admin' && exists(/databases/$(database)/documents/users/$(request.auth.uid)));
-      allow update: if request.auth.uid == userId || (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
-      // Anyone can create a user document (as part of signup)
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      // Allow read access to own document or if user is an admin
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // Allow create only for the user themselves
+      allow create: if request.auth != null && request.auth.uid == userId;
+      // Allow update on own document or if user is an admin
+      allow update: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // Only admins can delete user documents (and not themselves for safety)
+      allow delete: if isAdmin() && request.auth.uid != userId;
     }
 
-    // Products are publically readable, but only admins can write them
     match /products/{productId} {
+      // Anyone can read products
       allow read: if true;
-      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // Only admins can create, update, or delete products
+      allow write: if isAdmin();
     }
 
-    // Orders can be created by any authenticated user for themselves
-    // and read by the user who owns it or an admin.
     match /orders/{orderId} {
-      allow create: if request.auth.uid == request.resource.data.userId;
-      allow read: if request.auth.uid == resource.data.userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-      allow update, delete: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // A user can create an order for themselves.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      // A user can read their own orders. An admin can read any order.
+      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
+      // Only an admin can update an order (e.g., change status).
+      allow update: if isAdmin();
+      // Only an admin can delete an order.
+      allow delete: if isAdmin();
     }
   }
 }
