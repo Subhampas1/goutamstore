@@ -317,15 +317,7 @@ export default function CartPage() {
                 {isProcessing ? (
                     <span>{language === 'en' ? 'Processing...' : 'प्रोसेस हो रहा है...'}</span>
                 ) : (
-                  <div className="flex items-center justify-center gap-2">
-                     <svg height="28" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="bold" fill="white">GPay</text>
-                    </svg>
-                     <div className="w-px h-5 bg-primary-foreground/50"></div>
-                     <svg height="28" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="20" fontWeight="bold" fill="white">PhonePe</text>
-                    </svg>
-                  </div>
+                   <span className="font-semibold">Gpay | PhonePe</span>
                 )}
               </Button>
               <Button variant="secondary" className="h-12 rounded-full w-full" onClick={handleCashCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
