@@ -10,5 +10,9 @@
     "frameworksBackend": {
       "id": "goutam-store"
     }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }
+
