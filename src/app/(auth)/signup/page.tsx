@@ -14,7 +14,7 @@ import { useCartStore } from '@/hooks/use-cart-store'
 import { useToast } from "@/hooks/use-toast"
 import { auth, db } from '@/lib/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { setDoc, doc, collection, query, limit, runTransaction } from 'firebase/firestore'
+import { setDoc, doc, collection, query, limit, getDocs, runTransaction } from 'firebase/firestore'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -38,21 +38,14 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
     try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, limit(1));
+      const snapshot = await getDocs(q);
+      const isFirstUser = snapshot.empty;
+      const role = isFirstUser ? 'admin' : 'user';
+
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
-
-      const role = await runTransaction(db, async (transaction) => {
-        const usersCollectionRef = collection(db, "users");
-        // We query for 2 users. If we get back 0 or 1, this new user is the first.
-        const existingUsersQuery = query(usersCollectionRef, limit(2));
-        const existingUsersSnapshot = await transaction.get(existingUsersQuery);
-        
-        // If there's 1 or 0 docs, this is the first user account being created.
-        if (existingUsersSnapshot.size <= 1) {
-            return 'admin';
-        }
-        return 'user';
-      });
 
       // Create the user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
