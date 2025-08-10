@@ -43,10 +43,15 @@ export default function Home() {
     if (!product.available) {
       return false;
     }
-    const name = product.name[language] || product.name.en
-    const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = category === 'all' || product.category === category
-    return matchesSearch && matchesCategory
+    const name = product.name[language] || product.name.en;
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    const matchesSearch = name.toLowerCase().includes(lowerCaseSearchTerm) || 
+                          product.category.toLowerCase().includes(lowerCaseSearchTerm);
+                          
+    const matchesCategory = category === 'all' || product.category === category;
+    
+    return matchesSearch && matchesCategory;
   })
 
   return (
@@ -56,7 +61,7 @@ export default function Home() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder={language === 'en' ? 'Search all products...' : 'सभी उत्पाद खोजें...'}
+            placeholder={language === 'en' ? 'Search by name or category...' : 'नाम या श्रेणी से खोजें...'}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 w-full"
