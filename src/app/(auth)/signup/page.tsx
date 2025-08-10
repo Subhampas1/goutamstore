@@ -69,7 +69,9 @@ export default function SignupPage() {
        console.error(error)
        toast({
         title: "Sign Up Failed",
-        description: error.message,
+        description: error.code === 'auth/email-already-in-use'
+          ? 'This email is already registered. Please log in.'
+          : error.message,
         variant: "destructive",
       })
     }
