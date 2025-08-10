@@ -204,12 +204,7 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                       <Command
-                        filter={(value, search) => {
-                          if (value.toLowerCase().includes(search.toLowerCase())) return 1
-                          return 0
-                        }}
-                       >
+                       <Command>
                         <CommandInput
                           placeholder="Search or create category..."
                           onKeyDown={(e) => {
@@ -230,8 +225,8 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
                                 <CommandItem
                                 value={category}
                                 key={category}
-                                onSelect={(currentValue) => {
-                                    form.setValue("category", currentValue === field.value ? "" : currentValue)
+                                onSelect={() => {
+                                    form.setValue("category", category)
                                     setIsPopoverOpen(false)
                                 }}
                                 >
@@ -351,3 +346,5 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
     </Dialog>
   )
 }
+
+    
