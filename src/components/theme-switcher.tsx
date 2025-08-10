@@ -35,11 +35,10 @@ export function ThemeSwitcher() {
       setTheme('light')
     }
   }
-  
-  if (!mounted) {
-    return <Button variant="outline" disabled={true} className="h-12 flex-1 rounded-full" />;
-  }
 
+  if (!mounted) {
+    return null
+  }
 
   return (
     <Button variant="outline" onClick={toggleTheme} aria-label="Toggle theme" className="flex-1 h-12 rounded-full">
