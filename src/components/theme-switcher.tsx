@@ -1,4 +1,3 @@
-
 // src/components/theme-switcher.tsx
 "use client"
 
@@ -38,8 +37,8 @@ export function ThemeSwitcher() {
   }
 
   if (!mounted) {
-    // Render a placeholder or null on the server and during initial client render
-    return <Button variant="outline" disabled className="h-12 flex-1 rounded-full" />;
+    // Render a placeholder on the server and during initial client render
+    return <Button variant="outline" disabled={true} className="h-12 flex-1 rounded-full" />;
   }
 
   return (
