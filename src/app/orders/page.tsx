@@ -92,42 +92,44 @@ export default function OrdersPage() {
           {loading ? (
              <div className="text-center py-8">Loading orders...</div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{language === 'en' ? 'Order ID' : 'आर्डर आईडी'}</TableHead>
-                  <TableHead>{language === 'en' ? 'Date' : 'दिनांक'}</TableHead>
-                  <TableHead>{language === 'en' ? 'Status' : 'स्थिति'}</TableHead>
-                  <TableHead className="text-right">{language === 'en' ? 'Total' : 'कुल'}</TableHead>
-                  <TableHead className="text-right">{language === 'en' ? 'Actions' : 'कार्रवाइयाँ'}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.length > 0 ? orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-medium">{order.orderId}</TableCell>
-                    <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">₹{order.total.toFixed(2)}</TableCell>
-                    <TableCell className="text-right">
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/invoice/${order.id}`}>
-                          {language === 'en' ? 'View Invoice' : 'इनवॉइस देखें'}
-                        </Link>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                )) : (
+            <div className="overflow-x-auto">
+              <Table className="min-w-full">
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      {language === 'en' ? 'You have no orders yet.' : 'आपके पास अभी तक कोई आर्डर नहीं है।'}
-                    </TableCell>
+                    <TableHead>{language === 'en' ? 'Order ID' : 'आर्डर आईडी'}</TableHead>
+                    <TableHead>{language === 'en' ? 'Date' : 'दिनांक'}</TableHead>
+                    <TableHead>{language === 'en' ? 'Status' : 'स्थिति'}</TableHead>
+                    <TableHead className="text-right">{language === 'en' ? 'Total' : 'कुल'}</TableHead>
+                    <TableHead className="text-right">{language === 'en' ? 'Actions' : 'कार्रवाइयाँ'}</TableHead>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {orders.length > 0 ? orders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-medium whitespace-nowrap p-2">{order.orderId}</TableCell>
+                      <TableCell className="whitespace-nowrap p-2">{new Date(order.date).toLocaleDateString()}</TableCell>
+                      <TableCell className="p-2">
+                        <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right whitespace-nowrap p-2">₹{order.total.toFixed(2)}</TableCell>
+                      <TableCell className="text-right p-2">
+                        <Button asChild variant="outline" size="sm">
+                          <Link href={`/invoice/${order.id}`}>
+                            {language === 'en' ? 'View Invoice' : 'इनवॉइस देखें'}
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-24 text-center">
+                        {language === 'en' ? 'You have no orders yet.' : 'आपके पास अभी तक कोई आर्डर नहीं है।'}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
