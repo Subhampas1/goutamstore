@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { db, auth } from '@/lib/firebase'
 import { collection, doc, updateDoc, onSnapshot } from 'firebase/firestore'
@@ -11,9 +11,12 @@ import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/hooks/use-toast'
 import { onAuthStateChanged } from 'firebase/auth'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@/components/ui/input'
+import { Search } from 'lucide-react'
 
 interface User {
-  id: string;
+  id: string; // This is the document ID, which is the same as the userId (uid)
+  userId: string;
   name: string;
   email: string;
   role: 'admin' | 'user';
@@ -25,6 +28,7 @@ export function UserManagement() {
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const authUnsubscribe = onAuthStateChanged(auth, (user) => {
@@ -37,7 +41,7 @@ export function UserManagement() {
 
     setLoading(true);
     const usersUnsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
-        const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+        const usersList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as User));
         setUsers(usersList);
         setLoading(false);
     }, (error) => {
@@ -51,6 +55,17 @@ export function UserManagement() {
         usersUnsubscribe();
     };
   }, [toast]);
+  
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) {
+      return users;
+    }
+    const lowercasedTerm = searchTerm.toLowerCase();
+    return users.filter(user => 
+      user.name.toLowerCase().includes(lowercasedTerm) ||
+      user.id.toLowerCase().includes(lowercasedTerm)
+    );
+  }, [users, searchTerm]);
 
 
   const handleUserStatusToggle = async (userId: string, isDisabled: boolean) => {
@@ -74,8 +89,22 @@ export function UserManagement() {
   return (
     <Card className="mt-4">
         <CardHeader>
-        <CardTitle className="font-headline text-2xl">User Details</CardTitle>
-        <CardDescription>View and manage all registered users.</CardDescription>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="flex-1">
+                    <CardTitle className="font-headline text-2xl">User Details</CardTitle>
+                    <CardDescription>View, manage, and search all registered users.</CardDescription>
+                </div>
+                <div className="relative w-full md:w-auto md:max-w-xs">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Search by name or User ID..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 w-full"
+                    />
+                </div>
+            </div>
         </CardHeader>
         <CardContent>
         {loading ? (
@@ -95,11 +124,12 @@ export function UserManagement() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {users.map((user) => (
+                    {filteredUsers.map((user) => (
                     <TableRow key={user.id}>
                         <TableCell className="font-medium whitespace-nowrap">
                         <div>{user.name}</div>
                         <div className="text-xs text-muted-foreground">{user.email}</div>
+                        <div className="text-xs text-muted-foreground">ID: {user.id}</div>
                         </TableCell>
                         <TableCell>
                         <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
