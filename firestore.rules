@@ -1,27 +1,35 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only create a document for themselves.
-    // They can read, update, or delete their own document.
+
+    // Users can only create their own user document.
+    // They can read and update their own document, but not delete it.
     match /users/{userId} {
-      allow create: if request.auth != null;
-      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      // Admin can read any user profile, and can update the 'disabled' and 'role' fields.
+      allow get: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' &&
+                      request.resource.data.keys().hasOnly(['disabled', 'role']);
     }
 
-    // Products can be read by anyone, but only created, updated, or deleted by an admin.
-    // The admin role is checked from the user's document in Firestore.
+    // Products can be read by anyone.
+    // Only admins can create, update, or delete products.
     match /products/{productId} {
       allow read: if true;
-      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     // Authenticated users can create their own orders.
-    // They can only read their own orders.
+    // Users can only read their own orders.
     // Admins can read all orders.
     match /orders/{orderId} {
-      allow create: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
       allow read: if (request.auth != null && request.auth.uid == resource.data.userId) || 
-                     (request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+                     (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      // No one can update or delete orders from the client for data integrity.
+      allow update, delete: if false;
     }
   }
 }
