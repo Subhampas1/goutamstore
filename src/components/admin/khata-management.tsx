@@ -4,34 +4,26 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Order, UserProfile } from '@/types'
 import { db } from '@/lib/firebase'
-import { collection, onSnapshot, Timestamp, query } from 'firebase/firestore'
+import { collection, onSnapshot, Timestamp } from 'firebase/firestore'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Separator } from '@/components/ui/separator'
-import { useCartStore } from '@/hooks/use-cart-store'
 import { Skeleton } from '@/components/ui/skeleton'
 
 interface OrderWithUser extends Order {
   user?: UserProfile;
 }
 
-export default function KhataAdminPage() {
+export function KhataManagement() {
   const [users, setUsers] = useState<UserProfile[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const userRole = useCartStore(state => state.userRole)
-
 
   useEffect(() => {
-    if (userRole !== 'admin') {
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
 
     const usersQuery = collection(db, 'users');
@@ -64,7 +56,7 @@ export default function KhataAdminPage() {
       usersUnsubscribe();
       ordersUnsubscribe();
     };
-  }, [userRole]);
+  }, []);
 
   const ordersWithUsers = useMemo<OrderWithUser[]>(() => {
     const userMap = new Map(users.map(user => [user.userId, user]))
@@ -131,10 +123,9 @@ export default function KhataAdminPage() {
   )
 
   return (
-    <div className="container mx-auto px-4 py-8">
-    <Card>
+    <Card className="mt-4">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Khata Management</CardTitle>
+        <CardTitle className="font-headline text-2xl">Khata Details</CardTitle>
         <CardDescription>Track all orders and view transaction history by user or date.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -147,8 +138,6 @@ export default function KhataAdminPage() {
                 <Skeleton className="h-40 w-full" />
                 <Skeleton className="h-40 w-full" />
             </div>
-        ) : userRole !== 'admin' ? (
-          <p className="text-destructive">You do not have permission to view this section.</p>
         ) : (
           <Tabs defaultValue="user">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
@@ -221,6 +210,5 @@ export default function KhataAdminPage() {
         )}
       </CardContent>
     </Card>
-    </div>
   )
 }

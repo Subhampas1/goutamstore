@@ -16,7 +16,7 @@ import { Pencil, Trash2, PlusCircle, Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export default function ProductsAdminPage() {
+export function ProductManagement() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -99,17 +99,17 @@ export default function ProductsAdminPage() {
   };
   
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
         <ProductForm
             isOpen={isFormOpen}
             setIsOpen={setIsFormOpen}
             product={selectedProduct}
             categories={productCategories}
         />
-        <Card>
+        <Card className="mt-4">
             <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="flex-1">
-                    <CardTitle className="font-headline text-2xl">Product Management</CardTitle>
+                    <CardTitle className="font-headline text-2xl">Product Details</CardTitle>
                     <CardDescription>Add, edit, or remove products from your store.</CardDescription>
                 </div>
                 <div className="flex w-full md:w-auto items-center gap-2">
@@ -198,6 +198,6 @@ export default function ProductsAdminPage() {
                 )}
             </CardContent>
         </Card>
-    </div>
+    </>
   )
 }

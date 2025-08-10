@@ -1,16 +1,18 @@
 
 'use client'
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Users, Package, BookText } from "lucide-react"
-import Link from "next/link"
-import { useCartStore } from '@/hooks/use-cart-store'
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { onAuthStateChanged } from "firebase/auth"
 import { auth, db } from "@/lib/firebase"
 import { doc, getDoc } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
+import { KhataManagement } from "@/components/admin/khata-management"
+import { ProductManagement } from "@/components/admin/product-management"
+import { UserManagement } from "@/components/admin/user-management"
 
 export default function AdminDashboardPage() {
     const router = useRouter()
@@ -71,49 +73,24 @@ export default function AdminDashboardPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="font-headline text-3xl md:text-4xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground">Select a section to manage your store.</p>
+        <p className="text-muted-foreground">Manage your store's orders, products, and users.</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link href="/admin/khata">
-            <Card className="hover:bg-muted/50 transition-colors h-full">
-            <CardHeader className="flex flex-row items-center gap-4">
-                <div className="bg-primary/10 text-primary p-3 rounded-md">
-                    <BookText className="h-6 w-6" />
-                </div>
-                <div>
-                    <CardTitle>Khata Management</CardTitle>
-                    <CardDescription>Track all orders and transactions.</CardDescription>
-                </div>
-            </CardHeader>
-            </Card>
-        </Link>
-        <Link href="/admin/products">
-            <Card className="hover:bg-muted/50 transition-colors h-full">
-            <CardHeader className="flex flex-row items-center gap-4">
-                 <div className="bg-primary/10 text-primary p-3 rounded-md">
-                    <Package className="h-6 w-6" />
-                </div>
-                <div>
-                    <CardTitle>Product Management</CardTitle>
-                    <CardDescription>Add, edit, or remove products.</CardDescription>
-                </div>
-            </CardHeader>
-            </Card>
-        </Link>
-        <Link href="/admin/users">
-            <Card className="hover:bg-muted/50 transition-colors h-full">
-            <CardHeader className="flex flex-row items-center gap-4">
-                <div className="bg-primary/10 text-primary p-3 rounded-md">
-                    <Users className="h-6 w-6" />
-                </div>
-                <div>
-                    <CardTitle>User Management</CardTitle>
-                    <CardDescription>View and manage all users.</CardDescription>
-                </div>
-            </CardHeader>
-            </Card>
-        </Link>
-      </div>
+      <Tabs defaultValue="khata" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="khata"><BookText />Khata Management</TabsTrigger>
+          <TabsTrigger value="products"><Package />Product Management</TabsTrigger>
+          <TabsTrigger value="users"><Users />User Management</TabsTrigger>
+        </TabsList>
+        <TabsContent value="khata">
+            <KhataManagement />
+        </TabsContent>
+        <TabsContent value="products">
+            <ProductManagement />
+        </TabsContent>
+        <TabsContent value="users">
+            <UserManagement />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
