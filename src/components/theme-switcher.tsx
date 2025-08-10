@@ -6,7 +6,17 @@ import { Moon, Sun, Monitor } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+
+function ThemeSwitcherIcon({ theme }: { theme: string | undefined }) {
+  if (theme === 'light') {
+    return <><Sun /> Light Mode</>
+  }
+  if (theme === 'dark') {
+    return <><Moon/> Dark Mode</>
+  }
+  return <><Monitor /> System</>
+}
+
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme()
@@ -25,25 +35,15 @@ export function ThemeSwitcher() {
       setTheme('light')
     }
   }
-
-  const getButtonContent = () => {
-    if (theme === 'light') {
-      return <><Sun /> Light Mode</>
-    }
-    if (theme === 'dark') {
-      return <><Moon/> Dark Mode</>
-    }
-    return <><Monitor /> System</>
-  }
-
+  
   if (!mounted) {
-    // Render a placeholder on the server and during initial client render
     return <Button variant="outline" disabled={true} className="h-12 flex-1 rounded-full" />;
   }
 
+
   return (
     <Button variant="outline" onClick={toggleTheme} aria-label="Toggle theme" className="flex-1 h-12 rounded-full">
-      {getButtonContent()}
+      <ThemeSwitcherIcon theme={theme} />
       <span className="sr-only">Toggle theme</span>
     </Button>
   )
