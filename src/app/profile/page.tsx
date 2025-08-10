@@ -295,10 +295,10 @@ export default function ProfilePage() {
                       )}
                     />
                      <div className="flex gap-2">
-                        <Button type="button" variant="ghost" onClick={() => setIsEditing(false)} className="w-full">
+                        <Button type="button" variant="ghost" onClick={() => setIsEditing(false)} className="w-full h-12 rounded-full">
                             Cancel
                         </Button>
-                        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                        <Button type="submit" className="w-full h-12 rounded-full" disabled={form.formState.isSubmitting}>
                             {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>
@@ -314,24 +314,25 @@ export default function ProfilePage() {
             </Form>
             
             <div className="flex gap-2 w-full pt-4">
-                {!isEditing && (
-                    <Button variant="outline" className="w-full" onClick={() => setIsEditing(true)}>
-                        <Pencil /> Edit Profile
-                    </Button>
-                )}
-                 <Button variant="outline" className="w-full" asChild>
-                    <Link href="/orders"><Package />My Orders</Link>
+              {!isEditing && (
+                <Button variant="outline" className="w-full h-12 rounded-full" onClick={() => setIsEditing(true)}>
+                  <Pencil /> Edit Profile
                 </Button>
+              )}
+              <Button variant="outline" className="w-full h-12 rounded-full" asChild>
+                <Link href="/orders"><Package />My Orders</Link>
+              </Button>
             </div>
+
              {userRole === 'admin' && (
-              <Button variant="secondary" className="w-full" asChild>
+              <Button variant="secondary" className="w-full h-12 rounded-full" asChild>
                 <Link href="/admin/dashboard"><LayoutDashboard />Admin Dashboard</Link>
               </Button>
             )}
         </CardContent>
         <CardFooter className="flex items-center justify-between gap-2">
            <ThemeSwitcher />
-           <Button variant="destructive" className="flex-1" onClick={handleLogout}><LogOut className="mr-2 h-4 w-4" /> Logout</Button>
+           <Button variant="destructive" className="flex-1 h-12 rounded-full" onClick={handleLogout}><LogOut className="mr-2 h-4 w-4" /> Logout</Button>
         </CardFooter>
       </Card>
     </div>
