@@ -23,7 +23,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
 import type { UserProfile as UserProfileType } from '@/types'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Skeleton } from '../ui/skeleton'
+import { Skeleton } from '@/components/ui/skeleton'
 
 
 const profileSchema = z.object({
@@ -337,5 +337,3 @@ export default function ProfilePage() {
     </div>
   )
 }
-
-    
