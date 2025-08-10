@@ -110,19 +110,19 @@ export function KhataManagement() {
 
 
   const renderOrderDetails = (order: OrderWithUser) => (
-    <div className="text-sm">
-      <div className="flex justify-between items-center mb-2">
+    <div className="text-sm overflow-x-auto">
+      <div className="flex justify-between items-center mb-2 min-w-[280px]">
         <div>
             <span className="font-semibold">Order ID:</span> {order.orderId}
         </div>
         <div className="font-bold">₹{order.total.toFixed(2)}</div>
       </div>
       <Separator className="my-2"/>
-      <ul className="space-y-1">
+      <ul className="space-y-1 min-w-[280px]">
         {order.items.map(item => (
           <li key={item.product.id} className="flex justify-between items-center text-muted-foreground">
-            <span>{item.product.name.en} x {item.quantity}{item.product.unit}</span>
-            <span className="font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</span>
+            <span className="whitespace-nowrap pr-2">{item.product.name.en} x {item.quantity}{item.product.unit}</span>
+            <span className="font-medium whitespace-nowrap">₹{(item.product.price * item.quantity).toFixed(2)}</span>
           </li>
         ))}
       </ul>
