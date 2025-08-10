@@ -340,7 +340,7 @@ export default function ProfilePage() {
         </CardContent>
         <CardFooter className="flex-col gap-4">
             <div className="flex w-full items-center justify-center gap-4">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 md:hidden">
                     <Label htmlFor="language-toggle-profile" className="text-sm font-medium">EN</Label>
                     <Switch id="language-toggle-profile" checked={language === 'hi'} onCheckedChange={toggleLanguage} aria-label="Toggle language"/>
                     <Label htmlFor="language-toggle-profile" className="text-sm font-medium">HI</Label>

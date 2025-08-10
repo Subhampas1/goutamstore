@@ -68,11 +68,11 @@ export function Header() {
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="language-toggle" className="text-sm font-medium">EN</Label>
-              <Switch id="language-toggle" checked={store.language === 'hi'} onCheckedChange={store.toggleLanguage} aria-label="Toggle language"/>
-              <Label htmlFor="language-toggle" className="text-sm font-medium">HI</Label>
+          <div className="flex items-center justify-end gap-2 sm:gap-4 w-full">
+            <div className="hidden md:flex items-center gap-2">
+              <Label htmlFor="language-toggle-header" className="text-sm font-medium">EN</Label>
+              <Switch id="language-toggle-header" checked={store.language === 'hi'} onCheckedChange={store.toggleLanguage} aria-label="Toggle language"/>
+              <Label htmlFor="language-toggle-header" className="text-sm font-medium">HI</Label>
             </div>
 
             <div className="hidden md:flex items-center gap-2">
