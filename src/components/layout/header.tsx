@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ShoppingCart, LogIn, LayoutDashboard, User } from 'lucide-react'
+import { ShoppingCart, LogIn, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/hooks/use-cart-store'
 import { useState, useEffect } from 'react'
@@ -68,48 +68,56 @@ export function Header() {
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <div className="flex items-center justify-end gap-2 sm:gap-4 w-full">
-            <div className="hidden md:flex items-center gap-2">
-              <Label htmlFor="language-toggle-header" className="text-sm font-medium">EN</Label>
-              <Switch id="language-toggle-header" checked={store.language === 'hi'} onCheckedChange={store.toggleLanguage} aria-label="Toggle language"/>
-              <Label htmlFor="language-toggle-header" className="text-sm font-medium">HI</Label>
-            </div>
-
-            <div className="hidden md:flex items-center gap-2">
-              <ThemeSwitcher />
-            </div>
-            
-            <div className="hidden md:flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative" asChild>
-                <Link href="/cart">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartCount > 0 && (
-                    <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 justify-center rounded-full p-0">
-                      {cartCount}
-                    </Badge>
-                  )}
-                  <span className="sr-only">Shopping Cart</span>
-                </Link>
-              </Button>
-               <Button variant="ghost" size="icon" asChild>
-                  <Link href="/profile">
-                    <User className="h-5 w-5" />
-                     <span className="sr-only">Profile</span>
-                  </Link>
-                </Button>
-            </div>
-            
-            <div className="hidden md:block">
-              {!isAuthenticated && isClient && (
-                  <Button asChild className="hidden md:inline-flex">
-                    <Link href="/login">
-                      <LogIn className="mr-2 h-4 w-4" />
-                      Login
+           <div className="flex items-center justify-end gap-2 sm:gap-4 w-full">
+               <div className="md:hidden">
+                 <Button variant="ghost" size="icon" asChild>
+                    <Link href="/profile">
+                      <User className="h-6 w-6" />
+                       <span className="sr-only">Profile</span>
                     </Link>
                   </Button>
-              )}
+               </div>
+              <div className="hidden md:flex items-center gap-2">
+                <Label htmlFor="language-toggle-header" className="text-sm font-medium">EN</Label>
+                <Switch id="language-toggle-header" checked={store.language === 'hi'} onCheckedChange={store.toggleLanguage} aria-label="Toggle language"/>
+                <Label htmlFor="language-toggle-header" className="text-sm font-medium">HI</Label>
+              </div>
+
+              <div className="hidden md:flex items-center gap-2">
+                <ThemeSwitcher />
+              </div>
+              
+              <div className="hidden md:flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="relative" asChild>
+                  <Link href="/cart">
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartCount > 0 && (
+                      <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 justify-center rounded-full p-0">
+                        {cartCount}
+                      </Badge>
+                    )}
+                    <span className="sr-only">Shopping Cart</span>
+                  </Link>
+                </Button>
+                 <Button variant="ghost" size="icon" asChild>
+                    <Link href="/profile">
+                      <User className="h-5 w-5" />
+                       <span className="sr-only">Profile</span>
+                    </Link>
+                  </Button>
+              </div>
+              
+              <div className="hidden md:block">
+                {!isAuthenticated && isClient && (
+                    <Button asChild className="hidden md:inline-flex">
+                      <Link href="/login">
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Login
+                      </Link>
+                    </Button>
+                )}
+              </div>
             </div>
-          </div>
         </div>
       </div>
     </header>

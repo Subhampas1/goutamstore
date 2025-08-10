@@ -1,8 +1,9 @@
+
 'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, BookText, ShoppingCart, User } from 'lucide-react'
+import { Home, BookText, ShoppingCart } from 'lucide-react'
 import { useCartStore } from '@/hooks/use-cart-store'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -24,7 +25,6 @@ export function BottomNav() {
     { href: '/', label: 'Home', icon: Home },
     { href: '/khata', label: 'Khata', icon: BookText },
     { href: '/cart', label: 'Cart', icon: ShoppingCart },
-    { href: '/profile', label: 'Profile', icon: User },
   ]
 
   return (
