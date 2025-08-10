@@ -59,6 +59,11 @@ export function Header() {
                 </Link>
                )
             })}
+             {isAuthenticated && userRole === 'admin' && (
+                <Link href="/admin/dashboard" className="transition-colors hover:text-primary font-semibold text-primary">
+                    Admin
+                </Link>
+              )}
           </nav>
         </div>
 
@@ -75,13 +80,6 @@ export function Header() {
             </div>
             
             <div className="hidden md:flex items-center gap-2">
-              {isAuthenticated && userRole === 'admin' && (
-                <Button variant="ghost" asChild>
-                  <Link href="/admin/dashboard" className="flex items-center gap-2">
-                    <LayoutDashboard className="h-5 w-5" /> Admin
-                  </Link>
-                </Button>
-              )}
               <Button variant="ghost" size="icon" className="relative" asChild>
                 <Link href="/cart">
                   <ShoppingCart className="h-5 w-5" />

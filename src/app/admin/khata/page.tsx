@@ -12,12 +12,13 @@ import { Search } from 'lucide-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Separator } from '@/components/ui/separator'
 import { useCartStore } from '@/hooks/use-cart-store'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface OrderWithUser extends Order {
   user?: UserProfile;
 }
 
-export function KhataManagement() {
+export default function KhataAdminPage() {
   const [users, setUsers] = useState<UserProfile[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
@@ -130,19 +131,27 @@ export function KhataManagement() {
   )
 
   return (
+    <div className="container mx-auto px-4 py-8">
     <Card>
       <CardHeader>
-        <CardTitle>Khata Management</CardTitle>
-        <CardDescription>Track all orders and view transaction history.</CardDescription>
+        <CardTitle className="font-headline text-2xl">Khata Management</CardTitle>
+        <CardDescription>Track all orders and view transaction history by user or date.</CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
-          <p>Loading ledger...</p>
+            <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-10 w-64" />
+                </div>
+                <Skeleton className="h-40 w-full" />
+                <Skeleton className="h-40 w-full" />
+            </div>
         ) : userRole !== 'admin' ? (
           <p className="text-destructive">You do not have permission to view this section.</p>
         ) : (
           <Tabs defaultValue="user">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
                <TabsList>
                   <TabsTrigger value="user">Group by User</TabsTrigger>
                   <TabsTrigger value="date">Group by Date</TabsTrigger>
@@ -212,5 +221,6 @@ export function KhataManagement() {
         )}
       </CardContent>
     </Card>
+    </div>
   )
 }
