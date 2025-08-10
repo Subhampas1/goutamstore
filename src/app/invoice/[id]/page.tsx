@@ -81,6 +81,8 @@ export default function InvoicePage() {
   if (!order) {
     notFound()
   }
+  
+  const paymentMethod = order.paymentDetails?.provider === 'Cash' ? 'Cash' : 'Online'
 
   return (
     <div className="container mx-auto px-4 py-8 print:py-0">
@@ -119,7 +121,7 @@ export default function InvoicePage() {
             </div>
             <div className="text-right">
               <p><span className="font-semibold">{language === 'en' ? 'Invoice Date:' : 'इनवॉइस दिनांक:'}</span> {new Date(order.date).toLocaleDateString()}</p>
-              <p><span className="font-semibold">{language === 'en' ? 'Due Date:' : 'देय तिथि:'}</span> {new Date(order.date).toLocaleDateString()}</p>
+              <p><span className="font-semibold">{language === 'en' ? 'Payment Method:' : 'भुगतान विधि:'}</span> {paymentMethod}</p>
             </div>
           </div>
           <Table>
