@@ -63,7 +63,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </CardHeader>
         <CardContent className="p-1 md:p-3 flex-1 flex flex-col justify-between space-y-1">
-          <CardTitle className="text-sm md:text-base font-headline line-clamp-2 flex-grow">{product.name[language]}</CardTitle>
+          <CardTitle className="text-sm md:text-base font-headline truncate flex-grow">{product.name[language]}</CardTitle>
           <p className="text-base md:text-lg font-semibold font-headline text-primary">
             ₹{product.price.toFixed(2)}
             {product.unit && <span className="text-sm font-normal text-muted-foreground">{getUnitString(product.unit)}</span>}
