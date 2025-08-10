@@ -14,7 +14,7 @@ import { useCartStore } from '@/hooks/use-cart-store'
 import { useToast } from "@/hooks/use-toast"
 import { auth, db } from '@/lib/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { setDoc, doc, collection, query, limit, getDocs } from 'firebase/firestore'
+import { setDoc, doc } from 'firebase/firestore'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -42,7 +42,7 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password)
       const user = userCredential.user
 
-      // For all new users, the role will be 'user' by default.
+      // The role for all new users will be 'user'.
       // The admin role can be assigned manually in the Firebase Console for security.
       const role = 'user'
 
@@ -68,7 +68,7 @@ export default function SignupPage() {
       router.push('/');
 
     } catch (error: any) {
-       console.error("Signup Error:", error)
+       console.error("Detailed Signup Error:", error);
        toast({
         title: "Sign Up Failed",
         description: error.code === 'auth/email-already-in-use'
