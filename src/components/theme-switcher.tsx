@@ -1,3 +1,4 @@
+
 // src/components/theme-switcher.tsx
 "use client"
 
@@ -6,6 +7,7 @@ import { Moon, Sun, Monitor } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme()
@@ -25,15 +27,23 @@ export function ThemeSwitcher() {
     }
   }
 
+  const getButtonContent = () => {
+    if (theme === 'light') {
+      return <><Sun /> Light Mode</>
+    }
+    if (theme === 'dark') {
+      return <><Moon/> Dark Mode</>
+    }
+    return <><Monitor /> System</>
+  }
+
   if (!mounted) {
-    return <Button variant="ghost" size="icon" disabled className="h-10 w-10" />
+    return <Button variant="ghost" disabled className="h-12 w-full rounded-full" />
   }
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
-      {theme === 'light' && <Sun className="h-[1.2rem] w-[1.2rem] transition-all" />}
-      {theme === 'dark' && <Moon className="h-[1.2rem] w-[1.2rem] transition-all" />}
-      {theme === 'system' && <Monitor className="h-[1.2rem] w-[1.2rem] transition-all" />}
+    <Button variant="ghost" onClick={toggleTheme} aria-label="Toggle theme" className="w-full h-12 rounded-full">
+      {getButtonContent()}
       <span className="sr-only">Toggle theme</span>
     </Button>
   )

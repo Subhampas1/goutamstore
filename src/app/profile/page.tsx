@@ -332,7 +332,7 @@ export default function ProfilePage() {
         </CardContent>
         <CardFooter className="flex items-center justify-between gap-2">
            <ThemeSwitcher />
-           <Button variant="destructive" className="flex-1 h-12 rounded-full" onClick={handleLogout}><LogOut className="mr-2 h-4 w-4" /> Logout</Button>
+           <Button variant="destructive" className="w-full h-12 rounded-full" onClick={handleLogout}><LogOut className="mr-2 h-4 w-4" /> Logout</Button>
         </CardFooter>
       </Card>
     </div>
