@@ -42,7 +42,7 @@ export function Header() {
               <path d="M60 60 A40 40 0 0 1 140 60" fill="none" className="stroke-primary" strokeWidth="12"/>
               <text x="100" y="130" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif" fontSize="80" fontWeight="bold" fill="white">G</text>
             </svg>
-            <span className="font-bold font-headline text-lg hidden sm:inline-block">Goutam Store</span>
+            <span className="font-bold font-headline text-lg inline-block">Goutam Store</span>
           </Link>
           <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
             {navLinks.map(link => {
