@@ -86,7 +86,14 @@ export default function SignupPage() {
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-14rem)] py-12">
       <Card className="mx-auto max-w-sm w-full">
-        <CardHeader>
+        <CardHeader className="text-center">
+           <div className="flex justify-center mb-4">
+               <svg width="64" height="64" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="40" y="60" width="120" height="100" rx="20" className="fill-accent"/>
+                <path d="M60 60 A40 40 0 0 1 140 60" fill="none" className="stroke-accent" strokeWidth="12"/>
+                <text x="100" y="130" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif" fontSize="80" fontWeight="bold" className="fill-accent-foreground">G</text>
+              </svg>
+            </div>
           <CardTitle className="text-2xl font-headline">Sign Up</CardTitle>
           <CardDescription>Create an account to start shopping</CardDescription>
         </CardHeader>
