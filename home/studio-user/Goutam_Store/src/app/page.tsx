@@ -3,7 +3,7 @@
 
 import { Suspense } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { HomePageGuts } from '../components/home-page-guts'
+import { HomePageGuts } from '@/components/home-page-guts'
 
 
 function HomePageLoading() {

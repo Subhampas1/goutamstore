@@ -32,10 +32,8 @@ export function HomePageGuts() {
     const categoryQuery = searchParams.get('category')
     if (categoryQuery) {
       setCategory(categoryQuery)
-      // Optional: remove the query param from URL after setting state
-      // router.replace('/', {scroll: false});
     }
-  }, [searchParams, router])
+  }, [searchParams])
 
 
   useEffect(() => {
