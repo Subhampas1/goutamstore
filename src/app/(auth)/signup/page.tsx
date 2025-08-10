@@ -14,7 +14,7 @@ import { useCartStore } from '@/hooks/use-cart-store'
 import { useToast } from "@/hooks/use-toast"
 import { auth, db } from '@/lib/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { setDoc, doc } from 'firebase/firestore'
+import { setDoc, doc, getDocs, collection, query, limit } from 'firebase/firestore'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -38,25 +38,41 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
     try {
+      // Check if any users exist to determine if this is the first signup
+      const usersQuery = query(collection(db, "users"), limit(1));
+      const existingUsersSnapshot = await getDocs(usersQuery);
+      const isFirstUser = existingUsersSnapshot.empty;
+      
+      const role = isFirstUser ? 'admin' : 'user';
+
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      // Ensure user document includes name, email, and a default role
+      // Ensure user document includes name, email, and the determined role
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         name: values.name,
         email: values.email,
-        role: 'user', // Default role for new users
-        disabled: false, // Default disabled status
-        address: '', // Default empty address
+        role: role,
+        disabled: false,
+        address: '',
       });
 
-      login({ role: 'user' }); // Log in with the default role
+      login({ role });
+      
       toast({
         title: "Account Created",
-        description: "Welcome to Goutam Store!",
+        description: isFirstUser 
+            ? "Welcome! As the first user, you have been assigned admin privileges."
+            : "Welcome to Goutam Store!",
       })
-      router.push('/')
+      
+      if (role === 'admin') {
+          router.push('/admin/dashboard')
+      } else {
+          router.push('/')
+      }
+
     } catch (error: any) {
        console.error(error)
        toast({
