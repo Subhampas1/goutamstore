@@ -45,6 +45,7 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
   const { toast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+  const [inputValue, setInputValue] = useState("");
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -196,36 +197,38 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
                             !field.value && "text-muted-foreground"
                           )}
                         >
-                          {field.value
-                            ? categories.find(
-                                (category) => category === field.value
-                              )
-                            : "Select or create a category"}
+                          {field.value || "Select or create a category"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                      <Command>
+                       <Command>
                         <CommandInput 
-                            placeholder="Search or create category..." 
-                            onValueChange={(search) => {
-                                // Allow creating a new category by typing
-                                if(!categories.includes(search)) {
-                                    form.setValue("category", search)
-                                }
-                            }}
+                          placeholder="Search or create category..." 
+                          value={inputValue}
+                          onValueChange={setInputValue}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && inputValue && !categories.includes(inputValue)) {
+                              e.preventDefault();
+                              form.setValue("category", inputValue);
+                              setIsPopoverOpen(false);
+                            }
+                          }}
                         />
                         <CommandList>
-                            <CommandEmpty>No category found.</CommandEmpty>
+                            <CommandEmpty>
+                                {inputValue ? `No category found. Press Enter to create "${inputValue}".` : "No category found."}
+                            </CommandEmpty>
                             <CommandGroup>
                             {categories.map((category) => (
                                 <CommandItem
                                 value={category}
                                 key={category}
                                 onSelect={() => {
-                                    form.setValue("category", category)
-                                    setIsPopoverOpen(false)
+                                    form.setValue("category", category);
+                                    setInputValue(category);
+                                    setIsPopoverOpen(false);
                                 }}
                                 >
                                 <Check
@@ -245,7 +248,7 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
                     </PopoverContent>
                   </Popover>
                   <FormDescription>
-                    Select an existing category or type a new one.
+                    Select an existing category or type a new one and press Enter.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
