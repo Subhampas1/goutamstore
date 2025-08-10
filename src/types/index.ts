@@ -39,7 +39,6 @@ export type Order = {
   paymentDetails?: {
     provider: string;
     paymentId: string;
-    orderId: string;
     signature: string;
   }
 };

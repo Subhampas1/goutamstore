@@ -65,22 +65,23 @@ export default function CartPage() {
     }
 
     setIsCheckingOut(true);
+    const orderId = nanoid(10);
 
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: getCartTotal() * 100, // Amount in the smallest currency unit (paise)
       currency: "INR",
       name: "Goutam Store",
-      description: "Order Payment",
+      description: `Order #${orderId}`,
       image: "https://placehold.co/100x100.png", // Replace with your logo URL
       handler: async function (response: any) {
         // This function is called on successful payment
         try {
           const orderData = {
-              orderId: nanoid(10),
+              orderId: orderId,
               userId: auth.currentUser?.uid,
               items: cart.map(item => ({
-                  product: item.product, // Use the full product object
+                  product: item.product,
                   quantity: item.quantity
               })),
               total: getCartTotal(),
@@ -89,7 +90,6 @@ export default function CartPage() {
               paymentDetails: {
                   provider: 'Razorpay',
                   paymentId: response.razorpay_payment_id,
-                  orderId: response.razorpay_order_id,
                   signature: response.razorpay_signature,
               }
           };
