@@ -42,17 +42,12 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password)
       const user = userCredential.user
 
-      // After user is created, determine their role.
-      const usersRef = collection(db, 'users');
-      // We query for any document to see if the collection is empty.
-      // We limit to 1 for performance, as we only need to know if at least one user exists.
-      const q = query(usersRef, limit(1));
-      const snapshot = await getDocs(q);
-      const isFirstUser = snapshot.empty;
-      const role = isFirstUser ? 'admin' : 'user';
+      // For all new users, the role will be 'user' by default.
+      // The admin role can be assigned manually in the Firebase Console for security.
+      const role = 'user'
 
-      // Step 2: Create the user document in Firestore.
-      // This now runs with an authenticated user, which satisfies security rules.
+      // Step 2: Create the user document in Firestore with the authenticated user's UID.
+      // This runs after the user is created and signed in, which satisfies security rules.
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         name: values.name,
@@ -67,17 +62,13 @@ export default function SignupPage() {
       
       toast({
         title: "Account Created",
-        description: `Welcome! You have been assigned the ${role} role.`,
+        description: "Welcome! Your account has been successfully created.",
       })
       
-      if (role === 'admin') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/');
-      }
+      router.push('/');
 
     } catch (error: any) {
-       console.error(error)
+       console.error("Signup Error:", error)
        toast({
         title: "Sign Up Failed",
         description: error.code === 'auth/email-already-in-use'

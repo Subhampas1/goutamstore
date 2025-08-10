@@ -44,7 +44,17 @@ export default function LoginPage() {
       const userDocRef = doc(db, 'users', user.uid)
       const userDoc = await getDoc(userDocRef)
       
-      const userData = userDoc.exists() ? userDoc.data() : {};
+      if (!userDoc.exists()) {
+        await auth.signOut();
+        toast({
+            title: "Login Failed",
+            description: "No user profile found. Please sign up first.",
+            variant: "destructive",
+        });
+        return;
+      }
+
+      const userData = userDoc.data();
 
       if (userData.disabled) {
         await auth.signOut(); // Sign out the user immediately
@@ -76,7 +86,7 @@ export default function LoginPage() {
         title: "Login Failed",
         description: error.code === 'auth/invalid-credential' 
             ? 'Invalid email or password.'
-            : error.message,
+            : 'An unexpected error occurred. Please try again.',
         variant: "destructive",
       })
     }
