@@ -312,28 +312,28 @@ export default function CartPage() {
                 <span>₹{getCartTotal().toFixed(2)}</span>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col gap-3">
-               <Button className="w-full h-12 rounded-full" onClick={handleRazorpayCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
+            <CardFooter className="flex flex-col items-center gap-3">
+               <Button className="h-12 rounded-full" onClick={handleRazorpayCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
                 {isProcessing ? (
                     <span>{language === 'en' ? 'Processing...' : 'प्रोसेस हो रहा है...'}</span>
                 ) : (
                   <div className="flex items-center justify-center gap-3">
-                    <span className="font-semibold">{language === 'en' ? 'Pay with' : 'भुगतान करें'}</span>
-                    <svg height="20" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="bold" fill="white">Paytm</text>
+                    <span className="font-semibold">{language === 'en' ? 'Pay' : 'भुगतान'}</span>
+                    <svg height="24" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
+                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" fill="white">Paytm</text>
                     </svg>
                      <div className="w-px h-5 bg-primary-foreground/50"></div>
-                     <svg height="20" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="bold" fill="white">GPay</text>
+                     <svg height="24" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
+                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" fill="white">GPay</text>
                     </svg>
                      <div className="w-px h-5 bg-primary-foreground/50"></div>
-                     <svg height="20" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="bold" fill="white">PhonePe</text>
+                     <svg height="24" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
+                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" fill="white">PhonePe</text>
                     </svg>
                   </div>
                 )}
               </Button>
-              <Button variant="secondary" className="w-full h-12 rounded-full" onClick={handleCashCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
+              <Button variant="secondary" className="h-12 rounded-full" onClick={handleCashCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
                 <Wallet />
                 {isProcessing ? (language === 'en' ? 'Placing Order...' : 'आर्डर दिया जा रहा है...') : (language === 'en' ? 'Pay by Cash' : 'नकद द्वारा भुगतान')}
               </Button>
