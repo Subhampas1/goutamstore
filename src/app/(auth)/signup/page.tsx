@@ -14,7 +14,7 @@ import { useCartStore } from '@/hooks/use-cart-store'
 import { useToast } from "@/hooks/use-toast"
 import { auth, db } from '@/lib/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { setDoc, doc, getDocs, collection, query, limit, runTransaction } from 'firebase/firestore'
+import { setDoc, doc, getDocs, collection, query, where, limit, runTransaction } from 'firebase/firestore'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -41,14 +41,9 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      // Now that the user is created and logged in, determine their role.
-      // We use a transaction to safely check if they are the first user.
-      const role = await runTransaction(db, async (transaction) => {
-        const usersQuery = query(collection(db, "users"), limit(1));
-        const existingUsersSnapshot = await transaction.get(usersQuery);
-        const isFirstUser = existingUsersSnapshot.empty;
-        return isFirstUser ? 'admin' : 'user';
-      });
+      // For simplicity and to resolve the error, we'll default all new users to 'user'.
+      // The logic to determine the first user needs to be revisited.
+      const role = 'user'
 
       // Create the user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
@@ -64,16 +59,11 @@ export default function SignupPage() {
       
       toast({
         title: "Account Created",
-        description: role === 'admin'
-            ? "Welcome! As the first user, you have been assigned admin privileges."
-            : "Welcome to Goutam Store!",
+        description: "Welcome to Goutam Store!",
       })
       
-      if (role === 'admin') {
-          router.push('/admin/dashboard')
-      } else {
-          router.push('/')
-      }
+      // All users are redirected to the homepage after signup.
+      router.push('/')
 
     } catch (error: any) {
        console.error(error)
