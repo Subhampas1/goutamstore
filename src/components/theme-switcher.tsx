@@ -38,7 +38,8 @@ export function ThemeSwitcher() {
   }
 
   if (!mounted) {
-    return <Button variant="outline" disabled className="h-12 flex-1 rounded-full" />
+    // Render a placeholder or null on the server and during initial client render
+    return <Button variant="outline" disabled className="h-12 flex-1 rounded-full" />;
   }
 
   return (
