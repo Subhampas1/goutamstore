@@ -233,7 +233,7 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
              {loading ? <p>Loading products...</p> : (
-               <div className="overflow-x-auto">
+               <div className="relative w-full overflow-auto">
                  <Table>
                   <TableHeader>
                     <TableRow>
@@ -302,7 +302,7 @@ export default function AdminDashboardPage() {
             {loading ? (
               <p>Loading users...</p>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="relative w-full overflow-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>

@@ -110,7 +110,7 @@ export function KhataManagement() {
 
 
   const renderOrderDetails = (order: OrderWithUser) => (
-    <div className="text-sm overflow-x-auto">
+    <div className="text-sm w-full overflow-x-auto">
       <div className="flex justify-between items-center mb-2 min-w-[280px]">
         <div>
             <span className="font-semibold">Order ID:</span> {order.orderId}
