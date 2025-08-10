@@ -312,8 +312,8 @@ export default function CartPage() {
                 <span>₹{getCartTotal().toFixed(2)}</span>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col gap-2">
-               <Button className="w-full" onClick={handleRazorpayCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
+            <CardFooter className="flex flex-col gap-3">
+               <Button className="w-full h-12 rounded-full" onClick={handleRazorpayCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
                 {isProcessing ? (
                     <span>{language === 'en' ? 'Processing...' : 'प्रोसेस हो रहा है...'}</span>
                 ) : (
@@ -333,7 +333,7 @@ export default function CartPage() {
                   </div>
                 )}
               </Button>
-              <Button variant="secondary" className="w-full" onClick={handleCashCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
+              <Button variant="secondary" className="w-full h-12 rounded-full" onClick={handleCashCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
                 <Wallet />
                 {isProcessing ? (language === 'en' ? 'Placing Order...' : 'आर्डर दिया जा रहा है...') : (language === 'en' ? 'Pay by Cash' : 'नकद द्वारा भुगतान')}
               </Button>
