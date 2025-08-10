@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PackageOpen } from 'lucide-react'
+import { onAuthStateChanged } from 'firebase/auth'
 
 export default function KhataPage() {
   const router = useRouter()
@@ -26,46 +27,42 @@ export default function KhataPage() {
   }, [])
   
   useEffect(() => {
-    if (isClient) {
-      if (!isAuthenticated) {
-        router.push('/login')
-        return
-      }
+    if (!isClient) return;
 
-      const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user) {
-          setLoading(true)
-          const q = query(
-            collection(db, 'orders'), 
-            where('userId', '==', user.uid)
-          );
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        setLoading(true)
+        const q = query(
+          collection(db, 'orders'), 
+          where('userId', '==', user.uid)
+        );
 
-          const unsubFromOrders = onSnapshot(q, (snapshot) => {
-            const ordersList = snapshot.docs.map(doc => {
-              const data = doc.data();
-              return {
-                ...data,
-                id: doc.id,
-                // Convert Firestore Timestamp to JS Date string
-                date: (data.date as Timestamp)?.toDate().toISOString() || new Date().toISOString()
-              } as Order;
-            });
-            // Sort by date on the client
-            ordersList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            setOrders(ordersList)
-            setLoading(false)
-          }, (error) => {
-            console.error("Error fetching orders: ", error);
-            setLoading(false);
+        const unsubFromOrders = onSnapshot(q, (snapshot) => {
+          const ordersList = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+              ...data,
+              id: doc.id,
+              date: (data.date as Timestamp)?.toDate().toISOString() || new Date().toISOString()
+            } as Order;
           });
-          return () => unsubFromOrders();
-        } else {
-          setOrders([])
+          ordersList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setOrders(ordersList)
           setLoading(false)
+        }, (error) => {
+          console.error("Error fetching orders: ", error);
+          setLoading(false);
+        });
+        return () => unsubFromOrders();
+      } else {
+        if(isAuthenticated) { // Only redirect if they were previously logged in
+             router.push('/login')
         }
-      });
-      return () => unsubscribe();
-    }
+        setOrders([])
+        setLoading(false)
+      }
+    });
+    return () => unsubscribe();
   }, [isAuthenticated, router, isClient])
 
 
@@ -142,7 +139,7 @@ export default function KhataPage() {
                   <Link href={`/invoice/${order.id}`}>{language === 'en' ? 'View Invoice' : 'इनवॉइस देखें'}</Link>
                 </Button>
               </CardFooter>
-            </Card>
+            </card>
           ))}
         </div>
       )}

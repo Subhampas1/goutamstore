@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/hooks/use-cart-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { db, auth } from '@/lib/firebase'
-import { collection, doc, updateDoc, deleteDoc, onSnapshot, query, where, getDocs } from 'firebase/firestore'
+import { collection, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
@@ -17,6 +17,7 @@ import type { Product } from '@/types'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Pencil, Trash2, PlusCircle } from 'lucide-react'
 import { KhataManagement } from '@/app/admin/khata-management'
+import { onAuthStateChanged } from 'firebase/auth'
 
 interface User {
   id: string;
@@ -28,7 +29,7 @@ interface User {
 
 export default function AdminDashboardPage() {
   const router = useRouter()
-  const { isAuthenticated, userRole } = useCartStore()
+  const { userRole, isAuthenticated } = useCartStore()
   const [isClient, setIsClient] = useState(false)
   
   const [users, setUsers] = useState<User[]>([])
@@ -39,57 +40,70 @@ export default function AdminDashboardPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   const { toast } = useToast()
-  const currentUserId = auth.currentUser?.uid
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
   useEffect(() => {
-    if (isClient) {
-      if (!isAuthenticated || userRole !== 'admin') {
-        router.push('/login');
-        return;
-      }
+    if (!isClient) return;
 
-      setLoading(true);
-      
-      const usersQuery = collection(db, 'users');
-      const usersUnsubscribe = onSnapshot(usersQuery, (snapshot) => {
-        const usersList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as User));
-        setUsers(usersList);
-      }, (error) => {
-        console.error("Error fetching users: ", error);
-        if (error.code === 'permission-denied') {
-             toast({ title: "Permission Denied", description: "You do not have permission to view users.", variant: "destructive" })
-        } else {
-             toast({ title: "Error", description: "Failed to fetch users.", variant: "destructive" })
+    // Use onAuthStateChanged to ensure Firebase auth state is initialized
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in.
+        setCurrentUserId(user.uid)
+        
+        if (userRole !== 'admin') {
+          toast({ title: "Access Denied", description: "You must be an admin to view this page.", variant: "destructive" })
+          router.push('/login');
+          return;
         }
-      });
 
-      const productsQuery = collection(db, 'products');
-      const productsUnsubscribe = onSnapshot(productsQuery, (snapshot) => {
-        const productsList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as Product));
-        setProducts(productsList);
-        setLoading(false);
-      }, (error) => {
-        console.error("Error fetching products: ", error);
-        toast({ title: "Error", description: "Failed to fetch products.", variant: "destructive" })
-        setLoading(false);
-      });
+        setLoading(true);
 
-      return () => {
-        usersUnsubscribe();
-        productsUnsubscribe();
-      };
-    }
-  }, [isAuthenticated, userRole, router, isClient, toast]);
+        // Fetch users
+        const usersQuery = collection(db, 'users');
+        const usersUnsubscribe = onSnapshot(usersQuery, (snapshot) => {
+          const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+          setUsers(usersList);
+        }, (error) => {
+          console.error("Error fetching users: ", error);
+          toast({ title: "Permission Denied", description: "You do not have permission to view users.", variant: "destructive" })
+        });
+
+        // Fetch products
+        const productsQuery = collection(db, 'products');
+        const productsUnsubscribe = onSnapshot(productsQuery, (snapshot) => {
+          const productsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+          setProducts(productsList);
+          setLoading(false);
+        }, (error) => {
+          console.error("Error fetching products: ", error);
+          toast({ title: "Error", description: "Failed to fetch products.", variant: "destructive" })
+          setLoading(false);
+        });
+
+        // Return cleanup function for snapshots
+        return () => {
+          usersUnsubscribe();
+          productsUnsubscribe();
+        };
+
+      } else {
+        // User is signed out.
+        if (isAuthenticated) { // only redirect if they were previously logged in
+             router.push('/login');
+        }
+        setLoading(false);
+      }
+    });
+
+    // Return cleanup function for onAuthStateChanged
+    return () => unsubscribe();
+  }, [isClient, userRole, router, toast, isAuthenticated]);
+
 
   const handleUserStatusToggle = async (userId: string, isDisabled: boolean) => {
     if (userId === currentUserId) {
@@ -151,13 +165,22 @@ export default function AdminDashboardPage() {
     }
   };
 
-  if (!isClient || !isAuthenticated || userRole !== 'admin') {
+  if (!isClient || loading) {
     return (
         <div className="flex items-center justify-center min-h-[calc(100vh-14rem)]">
             <p>Loading or redirecting...</p>
         </div>
     )
   }
+  
+  if (!isAuthenticated || userRole !== 'admin') {
+     return (
+        <div className="flex items-center justify-center min-h-[calc(100vh-14rem)]">
+            <p>Redirecting to login...</p>
+        </div>
+    )
+  }
+
 
   return (
     <div className="container mx-auto px-4 py-8">
