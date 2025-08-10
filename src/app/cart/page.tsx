@@ -318,11 +318,6 @@ export default function CartPage() {
                     <span>{language === 'en' ? 'Processing...' : 'प्रोसेस हो रहा है...'}</span>
                 ) : (
                   <div className="flex items-center justify-center gap-2">
-                    <span className="font-semibold">{language === 'en' ? 'Pay' : 'भुगतान'}</span>
-                    <svg height="28" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="28" fontWeight="bold" fill="white">Paytm</text>
-                    </svg>
-                     <div className="w-px h-5 bg-primary-foreground/50"></div>
                      <svg height="28" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg">
                         <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="28" fontWeight="bold" fill="white">GPay</text>
                     </svg>
