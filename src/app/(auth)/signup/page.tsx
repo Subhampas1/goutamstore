@@ -14,7 +14,7 @@ import { useCartStore } from '@/hooks/use-cart-store'
 import { useToast } from "@/hooks/use-toast"
 import { auth, db } from '@/lib/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { setDoc, doc, collection, query, limit, getDocs, runTransaction } from 'firebase/firestore'
+import { setDoc, doc, collection, query, limit, getDocs } from 'firebase/firestore'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -38,16 +38,19 @@ export default function SignupPage() {
 
   async function onSubmit(values: z.infer<typeof signupSchema>) {
     try {
+      // Step 1: Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password)
+      const user = userCredential.user
+
+      // After user is created, determine their role.
       const usersRef = collection(db, 'users');
       const q = query(usersRef, limit(1));
       const snapshot = await getDocs(q);
       const isFirstUser = snapshot.empty;
       const role = isFirstUser ? 'admin' : 'user';
 
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
-
-      // Create the user document in Firestore
+      // Step 2: Create the user document in Firestore.
+      // This now runs with an authenticated user.
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         name: values.name,
@@ -57,7 +60,8 @@ export default function SignupPage() {
         address: '',
       });
 
-      login({ role });
+      // Update the client-side state
+      login({ role })
       
       toast({
         title: "Account Created",
