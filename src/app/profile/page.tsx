@@ -350,6 +350,17 @@ export default function ProfilePage() {
             <Button variant="destructive" className="w-full h-12 rounded-full" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" /> Logout
             </Button>
+            <div className="mt-4 border-t w-full pt-4 sm:hidden">
+              <nav className="flex items-center justify-center gap-4 md:gap-6 text-center">
+                <Link className="text-xs hover:underline text-muted-foreground hover:text-primary" href="/terms-of-service">
+                  Terms of Service
+                </Link>
+                <Link className="text-xs hover:underline text-muted-foreground hover:text-primary" href="/privacy-policy">
+                  Privacy Policy
+                </Link>
+              </nav>
+              <p className="text-xs text-muted-foreground text-center mt-2">&copy; {new Date().getFullYear()} Goutam Store</p>
+            </div>
         </CardFooter>
       </Card>
     </div>
