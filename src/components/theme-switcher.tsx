@@ -38,11 +38,11 @@ export function ThemeSwitcher() {
   }
 
   if (!mounted) {
-    return <Button variant="ghost" disabled className="h-12 flex-1 rounded-full" />
+    return <Button variant="outline" disabled className="h-12 flex-1 rounded-full" />
   }
 
   return (
-    <Button variant="ghost" onClick={toggleTheme} aria-label="Toggle theme" className="flex-1 h-12 rounded-full">
+    <Button variant="outline" onClick={toggleTheme} aria-label="Toggle theme" className="flex-1 h-12 rounded-full">
       {getButtonContent()}
       <span className="sr-only">Toggle theme</span>
     </Button>
