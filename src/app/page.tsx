@@ -15,6 +15,7 @@ import { db } from '@/lib/firebase'
 import { collection, onSnapshot } from 'firebase/firestore'
 import type { Product } from '@/types'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 export default function Home() {
   const language = useCartStore((state) => state.language)
@@ -24,6 +25,18 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('')
   const [category, setCategory] = useState('all')
   const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    const categoryQuery = searchParams.get('category')
+    if (categoryQuery) {
+      setCategory(categoryQuery)
+      // Optional: remove the query param from URL after setting state
+      // router.replace('/', {scroll: false}); 
+    }
+  }, [searchParams, router])
+
 
   useEffect(() => {
     setLoading(true);
