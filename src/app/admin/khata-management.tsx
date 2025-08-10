@@ -160,53 +160,57 @@ export function KhataManagement() {
             </div>
            
             <TabsContent value="user">
-                <Accordion type="multiple" className="w-full">
-                    {filteredUsers.map(([userId, userOrders]) => (
-                        <AccordionItem value={userId} key={userId}>
-                            <AccordionTrigger>
-                                <div className="flex flex-col items-start">
-                                    <span className="font-semibold text-lg">{userOrders[0]?.user?.name || 'Unknown User'}</span>
-                                    <span className="text-sm text-muted-foreground">{userOrders[0]?.user?.email}</span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                                <Accordion type="multiple" className="w-full pl-4 border-l">
-                                    {userOrders.map(order => (
-                                        <AccordionItem value={order.id} key={order.id}>
-                                            <AccordionTrigger>{`Date: ${new Date(order.date).toLocaleDateString()}`}</AccordionTrigger>
-                                            <AccordionContent>
-                                                {renderOrderDetails(order)}
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    ))}
-                                </Accordion>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                <div className="overflow-auto max-h-[500px]">
+                    <Accordion type="multiple" className="w-full">
+                        {filteredUsers.map(([userId, userOrders]) => (
+                            <AccordionItem value={userId} key={userId}>
+                                <AccordionTrigger>
+                                    <div className="flex flex-col items-start">
+                                        <span className="font-semibold text-lg">{userOrders[0]?.user?.name || 'Unknown User'}</span>
+                                        <span className="text-sm text-muted-foreground">{userOrders[0]?.user?.email}</span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <Accordion type="multiple" className="w-full pl-4 border-l">
+                                        {userOrders.map(order => (
+                                            <AccordionItem value={order.id} key={order.id}>
+                                                <AccordionTrigger>{`Date: ${new Date(order.date).toLocaleDateString()}`}</AccordionTrigger>
+                                                <AccordionContent>
+                                                    {renderOrderDetails(order)}
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        ))}
+                                    </Accordion>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
             </TabsContent>
             <TabsContent value="date">
-                 <Accordion type="multiple" className="w-full">
-                    {ordersGroupedByDate.map(([date, dateOrders]) => (
-                        <AccordionItem value={date} key={date}>
-                            <AccordionTrigger>
-                                <div className="font-semibold text-lg">{date}</div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                                <Accordion type="multiple" className="w-full pl-4 border-l">
-                                    {dateOrders.map(order => (
-                                        <AccordionItem value={order.id} key={order.id}>
-                                            <AccordionTrigger>{order.user?.name || 'Unknown User'}</AccordionTrigger>
-                                            <AccordionContent>
-                                                {renderOrderDetails(order)}
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    ))}
-                                </Accordion>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                 <div className="overflow-auto max-h-[500px]">
+                    <Accordion type="multiple" className="w-full">
+                        {ordersGroupedByDate.map(([date, dateOrders]) => (
+                            <AccordionItem value={date} key={date}>
+                                <AccordionTrigger>
+                                    <div className="font-semibold text-lg">{date}</div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <Accordion type="multiple" className="w-full pl-4 border-l">
+                                        {dateOrders.map(order => (
+                                            <AccordionItem value={order.id} key={order.id}>
+                                                <AccordionTrigger>{order.user?.name || 'Unknown User'}</AccordionTrigger>
+                                                <AccordionContent>
+                                                    {renderOrderDetails(order)}
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        ))}
+                                    </Accordion>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                 </div>
             </TabsContent>
           </Tabs>
         )}

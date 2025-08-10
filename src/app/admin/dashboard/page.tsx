@@ -232,6 +232,7 @@ export default function AdminDashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
+            <div className="overflow-auto max-h-[500px]">
              {loading ? <p>Loading products...</p> : (
                <Table>
                   <TableHeader>
@@ -288,6 +289,7 @@ export default function AdminDashboardPage() {
                   </TableBody>
                 </Table>
              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -297,6 +299,7 @@ export default function AdminDashboardPage() {
             <CardDescription>View and manage all registered users.</CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="overflow-auto max-h-[500px]">
             {loading ? (
               <p>Loading users...</p>
             ) : (
@@ -335,6 +338,7 @@ export default function AdminDashboardPage() {
                   </TableBody>
                 </Table>
             )}
+            </div>
           </CardContent>
         </Card>
       </div>
