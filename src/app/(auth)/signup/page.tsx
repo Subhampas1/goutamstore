@@ -44,13 +44,15 @@ export default function SignupPage() {
 
       // After user is created, determine their role.
       const usersRef = collection(db, 'users');
+      // We query for any document to see if the collection is empty.
+      // We limit to 1 for performance, as we only need to know if at least one user exists.
       const q = query(usersRef, limit(1));
       const snapshot = await getDocs(q);
       const isFirstUser = snapshot.empty;
       const role = isFirstUser ? 'admin' : 'user';
 
       // Step 2: Create the user document in Firestore.
-      // This now runs with an authenticated user.
+      // This now runs with an authenticated user, which satisfies security rules.
       await setDoc(doc(db, "users", user.uid), {
         userId: user.uid,
         name: values.name,
