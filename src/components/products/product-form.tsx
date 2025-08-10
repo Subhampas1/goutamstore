@@ -139,212 +139,212 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{product ? 'Edit Product' : 'Add New Product'}</DialogTitle>
            <DialogDescription>
             {product ? 'Update the details of the product.' : 'Fill in the details for the new product.'}
            </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-             <FormField
-                control={form.control}
-                name="name_en"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Product Name (EN)</FormLabel>
-                    <FormControl><Input placeholder="e.g., Whole Wheat Flour" {...field} /></FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            <FormField
-                control={form.control}
-                name="name_hi"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Product Name (HI)</FormLabel>
-                    <FormControl><Input placeholder="e.g., साबुत गेहूं का आटा" {...field} /></FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Category</FormLabel>
-                   <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value || "Select or create a category"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                       <Command>
-                        <CommandInput
-                          placeholder="Search or create category..."
-                          onKeyDown={(e) => {
-                             if (e.key === 'Enter') {
-                              e.preventDefault();
-                              const newCategoryValue = e.currentTarget.value;
-                              if (newCategoryValue && !categories.find(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) {
-                                form.setValue("category", newCategoryValue);
-                                setIsPopoverOpen(false);
-                              }
-                            }
-                          }}
-                        />
-                        <CommandList>
-                            <CommandEmpty>No category found. Press Enter to create.</CommandEmpty>
-                            <CommandGroup>
-                            {categories.map((category) => (
-                                <CommandItem
-                                value={category}
-                                key={category}
-                                onSelect={() => {
-                                    form.setValue("category", category)
-                                    setIsPopoverOpen(false)
-                                }}
-                                >
-                                <Check
-                                    className={cn(
-                                    "mr-2 h-4 w-4",
-                                    category === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                />
-                                {category}
-                                </CommandItem>
-                            ))}
-                            </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>
-                    Select an existing category or type a new one and press Enter.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-                control={form.control}
-                name="unit"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Unit Type</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-col space-y-1"
-                      >
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="pc" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            By Piece
-                          </FormLabel>
+        <div className="max-h-[80vh] overflow-y-auto pr-4">
+            <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="name_en"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Product Name (EN)</FormLabel>
+                        <FormControl><Input placeholder="e.g., Whole Wheat Flour" {...field} /></FormControl>
+                        <FormMessage />
                         </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="kg" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            By Weight (kg)
-                          </FormLabel>
+                    )}
+                    />
+                <FormField
+                    control={form.control}
+                    name="name_hi"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Product Name (HI)</FormLabel>
+                        <FormControl><Input placeholder="e.g., साबुत गेहूं का आटा" {...field} /></FormControl>
+                        <FormMessage />
                         </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="L" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            By Volume (L)
-                          </FormLabel>
+                    )}
+                    />
+                <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Price</FormLabel>
+                        <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+                        <FormMessage />
                         </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                  control={form.control}
-                  name="available"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Available</FormLabel>
-                        <FormDescription>
-                          Is this product available for purchase?
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-             <FormField
+                    )}
+                    />
+                <FormField
                 control={form.control}
-                name="image"
+                name="category"
                 render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Product Image Link (Optional)</FormLabel>
-                    <FormControl>
-                        <Input 
-                            placeholder="https://drive.google.com/uc?export=view&id=..."
-                            {...field}
-                         />
-                    </FormControl>
+                    <FormItem className="flex flex-col">
+                    <FormLabel>Category</FormLabel>
+                    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                        <PopoverTrigger asChild>
+                        <FormControl>
+                            <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn(
+                                "w-full justify-between",
+                                !field.value && "text-muted-foreground"
+                            )}
+                            >
+                            {field.value || "Select or create a category"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                        <Command>
+                            <CommandInput
+                            placeholder="Search or create category..."
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const newCategoryValue = e.currentTarget.value;
+                                if (newCategoryValue && !categories.find(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) {
+                                    form.setValue("category", newCategoryValue);
+                                    setIsPopoverOpen(false);
+                                }
+                                }
+                            }}
+                            />
+                            <CommandList>
+                                <CommandEmpty>No category found. Press Enter to create.</CommandEmpty>
+                                <CommandGroup>
+                                {categories.map((category) => (
+                                    <CommandItem
+                                    value={category}
+                                    key={category}
+                                    onSelect={() => {
+                                        form.setValue("category", category)
+                                        setIsPopoverOpen(false)
+                                    }}
+                                    >
+                                    <Check
+                                        className={cn(
+                                        "mr-2 h-4 w-4",
+                                        category === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                    />
+                                    {category}
+                                    </CommandItem>
+                                ))}
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+                        </PopoverContent>
+                    </Popover>
                     <FormDescription>
-                        Paste the direct Google Drive image link here. Leave blank for a default placeholder.
+                        Select an existing category or type a new one and press Enter.
                     </FormDescription>
                     <FormMessage />
                     </FormItem>
                 )}
                 />
-            <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving ? 'Saving...' : 'Save Product'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+                <FormField
+                    control={form.control}
+                    name="unit"
+                    render={({ field }) => (
+                    <FormItem className="space-y-3">
+                        <FormLabel>Unit Type</FormLabel>
+                        <FormControl>
+                        <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex flex-col space-y-1"
+                        >
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                                <RadioGroupItem value="pc" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                                By Piece
+                            </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                                <RadioGroupItem value="kg" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                                By Weight (kg)
+                            </FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                                <RadioGroupItem value="L" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                                By Volume (L)
+                            </FormLabel>
+                            </FormItem>
+                        </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="available"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                            <FormLabel>Available</FormLabel>
+                            <FormDescription>
+                            Is this product available for purchase?
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            />
+                        </FormControl>
+                        </FormItem>
+                    )}
+                    />
+                <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Product Image Link (Optional)</FormLabel>
+                        <FormControl>
+                            <Input 
+                                placeholder="https://drive.google.com/uc?export=view&id=..."
+                                {...field}
+                            />
+                        </FormControl>
+                        <FormDescription>
+                            Paste the direct Google Drive image link here. Leave blank for a default placeholder.
+                        </FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                 <DialogFooter className="sticky bottom-0 bg-background py-4 -mx-4 px-4 border-t">
+                    <Button type="button" variant="ghost" onClick={() => setIsOpen(false)}>Cancel</Button>
+                    <Button type="submit" disabled={isSaving}>
+                        {isSaving ? 'Saving...' : 'Save Product'}
+                    </Button>
+                </DialogFooter>
+            </form>
+            </Form>
+        </div>
       </DialogContent>
     </Dialog>
   )
 }
-
-    
