@@ -9,6 +9,7 @@ import { BottomNav } from '@/components/layout/bottom-nav'
 import { ThemeProvider } from '@/components/theme-provider'
 import { LoadingScreen } from '@/components/loading-screen'
 import { useEffect, useState } from 'react'
+import { AuthListener } from '@/components/auth/auth-listener'
 
 
 function AppBody({ children }: { children: React.ReactNode }) {
@@ -33,6 +34,7 @@ function AppBody({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
+      <AuthListener />
       {showLoader && <LoadingScreen />}
       <div className="flex min-h-screen flex-col">
         <Header />
