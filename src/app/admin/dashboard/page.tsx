@@ -237,17 +237,20 @@ export default function AdminDashboardPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead className="hidden sm:table-cell">Price</TableHead>
+                      <TableHead className="hidden sm:table-cell">Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredProducts.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.name.en}</TableCell>
-                        <TableCell>₹{product.price.toFixed(2)}</TableCell>
-                        <TableCell>
+                        <TableCell className="font-medium">
+                          <div>{product.name.en}</div>
+                          <div className="sm:hidden text-xs text-muted-foreground">₹{product.price.toFixed(2)}</div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">₹{product.price.toFixed(2)}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
                            <Switch
                                 id={`product-status-${product.id}`}
                                 checked={product.available}
@@ -303,18 +306,19 @@ export default function AdminDashboardPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
+                      <TableHead>User</TableHead>
+                      <TableHead className="hidden sm:table-cell">Role</TableHead>
                       <TableHead className="text-right">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {users.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>
+                        <TableCell className="font-medium">
+                          <div>{user.name}</div>
+                          <div className="text-xs text-muted-foreground">{user.email}</div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
                           <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
                             {user.role}
                           </Badge>
