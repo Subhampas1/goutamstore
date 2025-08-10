@@ -72,7 +72,7 @@ export function Header() {
                <div className="md:hidden">
                  <Button variant="ghost" size="icon" className="rounded-full" asChild>
                     <Link href="/profile">
-                      <User className="h-6 w-6" />
+                      <User className="h-6 w-6 fill-accent stroke-accent-foreground" />
                        <span className="sr-only">Profile</span>
                     </Link>
                   </Button>
