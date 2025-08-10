@@ -77,9 +77,21 @@ export default function AdminDashboardPage() {
       </div>
       <Tabs defaultValue="khata" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="khata"><BookText />Khata Management</TabsTrigger>
-          <TabsTrigger value="products"><Package />Product Management</TabsTrigger>
-          <TabsTrigger value="users"><Users />User Management</TabsTrigger>
+          <TabsTrigger value="khata">
+            <BookText className="mr-0 md:mr-2 h-5 w-5" />
+            <span className="hidden md:inline">Khata Management</span>
+            <span className="md:hidden">Khata</span>
+          </TabsTrigger>
+          <TabsTrigger value="products">
+            <Package className="mr-0 md:mr-2 h-5 w-5" />
+            <span className="hidden md:inline">Product Management</span>
+            <span className="md:hidden">Products</span>
+          </TabsTrigger>
+          <TabsTrigger value="users">
+            <Users className="mr-0 md:mr-2 h-5 w-5" />
+            <span className="hidden md:inline">User Management</span>
+            <span className="md:hidden">Users</span>
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="khata">
             <KhataManagement />
