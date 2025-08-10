@@ -70,9 +70,9 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end space-x-2">
            <div className="flex items-center justify-end gap-2 sm:gap-4 w-full">
                <div className="md:hidden">
-                 <Button variant="ghost" size="icon" className="rounded-full" asChild>
+                 <Button variant="ghost" size="icon" className="rounded-full text-foreground" asChild>
                     <Link href="/profile">
-                      <User className="h-6 w-6 fill-accent stroke-accent-foreground" />
+                      <User className="h-6 w-6" />
                        <span className="sr-only">Profile</span>
                     </Link>
                   </Button>
