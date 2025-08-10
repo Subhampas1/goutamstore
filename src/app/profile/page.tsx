@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { LogIn, UserPlus, LogOut, Package, LayoutDashboard, Upload } from 'lucide-react'
+import { LogIn, UserPlus, LogOut, Package, LayoutDashboard, Upload, Pencil } from 'lucide-react'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { auth, db, storage } from '@/lib/firebase'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
@@ -23,9 +23,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
 import type { UserProfile as UserProfileType } from '@/types'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Skeleton } from '../ui/skeleton'
 
 
 const profileSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters.').optional(),
   address: z.string().optional(),
 })
 
@@ -40,12 +42,13 @@ export default function ProfilePage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [isEditing, setIsEditing] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { address: '' },
+    defaultValues: { name: '', address: '' },
   })
 
 
@@ -58,7 +61,7 @@ export default function ProfilePage() {
         if (docSnap.exists()) {
           const profileData = docSnap.data() as UserProfileType
           setUserProfile(profileData);
-          form.reset({ address: profileData.address || '' })
+          form.reset({ name: profileData.name || '', address: profileData.address || '' })
           if (profileData.photoURL) {
             setPreviewUrl(profileData.photoURL)
           }
@@ -83,17 +86,22 @@ export default function ProfilePage() {
      
      const userDocRef = doc(db, 'users', auth.currentUser.uid)
      try {
-       await updateDoc(userDocRef, { address: values.address });
-       setUserProfile(prev => prev ? { ...prev, address: values.address } : null)
+       const dataToUpdate: { name?: string; address?: string } = {};
+       if (values.name) dataToUpdate.name = values.name;
+       if (values.address) dataToUpdate.address = values.address;
+
+       await updateDoc(userDocRef, dataToUpdate);
+       setUserProfile(prev => prev ? { ...prev, ...dataToUpdate } : null)
        toast({
          title: 'Success',
          description: 'Profile updated successfully.',
        });
+       setIsEditing(false)
      } catch (dbError) {
-        console.error("Error updating address:", dbError);
+        console.error("Error updating profile:", dbError);
         toast({
            title: 'Database Error',
-           description: 'Could not save your address.',
+           description: 'Could not save your profile.',
            variant: 'destructive',
         })
      }
@@ -173,15 +181,19 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-md mx-auto">
           <CardHeader className="items-center text-center">
-             <div className="h-24 w-24 mb-4 bg-muted rounded-full animate-pulse"></div>
-             <div className="h-6 w-32 bg-muted rounded animate-pulse mb-2"></div>
-             <div className="h-4 w-48 bg-muted rounded animate-pulse"></div>
+             <Skeleton className="h-24 w-24 mb-4 rounded-full" />
+             <Skeleton className="h-6 w-32 mb-2" />
+             <Skeleton className="h-4 w-48" />
           </CardHeader>
           <CardContent className="space-y-4">
-             <div className="h-10 w-full bg-muted rounded animate-pulse"></div>
-             <div className="h-10 w-full bg-muted rounded animate-pulse"></div>
-             <div className="h-10 w-full bg-muted rounded animate-pulse"></div>
+             <Skeleton className="h-10 w-full" />
+             <Skeleton className="h-10 w-full" />
+             <Skeleton className="h-10 w-full" />
           </CardContent>
+           <CardFooter className="flex items-center justify-between gap-2">
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 flex-1" />
+          </CardFooter>
         </Card>
       </div>
     )
@@ -218,8 +230,8 @@ export default function ProfilePage() {
         <CardHeader className="items-center text-center">
           <div className="relative">
             <Avatar className="h-24 w-24 mb-4">
-              <AvatarImage src={previewUrl || "https://placehold.co/100x100.png"} alt="User avatar" data-ai-hint="user avatar" />
-              <AvatarFallback>{userProfile?.name.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+              <AvatarImage src={previewUrl || userProfile?.photoURL || "https://placehold.co/100x100.png"} alt="User avatar" data-ai-hint="user avatar" />
+              <AvatarFallback>{userProfile?.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
              <Button
                 variant="outline"
@@ -240,44 +252,77 @@ export default function ProfilePage() {
                 disabled={isUploading}
               />
           </div>
-          <CardTitle className="font-headline text-2xl">{userProfile?.name || 'User'}</CardTitle>
-          <CardDescription>{userProfile?.email || 'user@example.com'}</CardDescription>
+           {isUploading && (
+              <div className="w-full px-4">
+                <Progress value={uploadProgress} className="w-full" />
+              </div>
+           )}
+           {selectedFile && !isUploading && (
+                <Button onClick={handleUploadAndSave} className="w-full" type="button" size="sm">
+                  Save New Photo
+                </Button>
+            )}
         </CardHeader>
         <CardContent className="space-y-4">
-            {isUploading && <Progress value={uploadProgress} className="w-full" />}
-            
-            <Form {...form}>
+             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleProfileUpdate)} className="space-y-4">
-                 <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Shipping Address</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="123 Main St, Anytown, USA" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <div className="flex gap-2">
-                  <Button type="submit" className="w-full" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
-                    {form.formState.isSubmitting ? 'Saving Address...' : 'Save Address'}
-                  </Button>
-                  {selectedFile && !isUploading && (
-                    <Button onClick={handleUploadAndSave} className="w-full" type="button">
-                      Save Photo
-                    </Button>
-                  )}
-                </div>
+                {isEditing ? (
+                  <>
+                     <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Your full name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Shipping Address</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="123 Main St, Anytown, USA" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <div className="flex gap-2">
+                        <Button type="button" variant="ghost" onClick={() => setIsEditing(false)} className="w-full">
+                            Cancel
+                        </Button>
+                        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                            {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                    </div>
+                  </>
+                ) : (
+                   <div className="space-y-4 text-center">
+                        <h2 className="text-2xl font-headline">{userProfile?.name}</h2>
+                        <p className="text-muted-foreground">{userProfile?.email}</p>
+                        <p className="text-sm">{userProfile?.address || 'No address set.'}</p>
+                   </div>
+                )}
               </form>
             </Form>
             
-            <Button variant="outline" className="w-full" asChild>
-              <Link href="/orders"><Package />My Orders</Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 w-full pt-4">
+                {!isEditing && (
+                    <Button variant="outline" className="w-full" onClick={() => setIsEditing(true)}>
+                        <Pencil /> Edit Profile
+                    </Button>
+                )}
+                 <Button variant="outline" className="w-full" asChild>
+                    <Link href="/orders"><Package />My Orders</Link>
+                </Button>
+            </div>
              {userRole === 'admin' && (
               <Button variant="secondary" className="w-full" asChild>
                 <Link href="/admin/dashboard"><LayoutDashboard />Admin Dashboard</Link>
@@ -292,3 +337,5 @@ export default function ProfilePage() {
     </div>
   )
 }
+
+    

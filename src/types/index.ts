@@ -39,7 +39,6 @@ export type Order = {
   paymentDetails?: {
     provider: string;
     paymentId: string;
-    signature?: string;
   }
 };
 
@@ -53,5 +52,7 @@ export interface UserProfile {
   photoURL?: string;
   address?: string;
 }
+
+    
 
     
