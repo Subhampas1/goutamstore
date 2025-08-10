@@ -19,4 +19,5 @@ jobs:
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOUTAM_STORE }}'
-          projectId: goutam-store
+          projectId: goutam-store-3uiby
+
