@@ -22,7 +22,7 @@ function AppBody({ children }: { children: React.ReactNode }) {
       sessionStorage.setItem("hasVisited", "true");
       const timer = setTimeout(() => {
         setShowLoader(false);
-      }, 1000); // Loader will show for 1 second
+      }, 3000); // Loader will show for 3 seconds
       return () => clearTimeout(timer);
     }
   }, []);

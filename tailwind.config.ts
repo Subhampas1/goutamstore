@@ -91,11 +91,16 @@ export default {
           '0%': { opacity: '1' },
           '100%': { opacity: '0', visibility: 'hidden' },
         },
+        'typing': {
+          'from': { width: '0' },
+          'to': { width: '100%' }
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fadeOut': 'fadeOut 0.5s ease-out forwards',
+        'typing': 'typing 2s steps(40, end)',
       },
     },
   },
@@ -103,8 +108,8 @@ export default {
     require('tailwindcss-animate'),
     plugin(function ({ addUtilities }) {
       addUtilities({
-        '.animation-delay-500': {
-          'animation-delay': '0.5s',
+        '.animation-delay-3000': {
+          'animation-delay': '3s',
         },
       })
     }),
