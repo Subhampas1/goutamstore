@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Order, UserProfile } from '@/types'
 import { db } from '@/lib/firebase'
-import { collection, onSnapshot, Timestamp } from 'firebase/firestore'
+import { collection, onSnapshot, Timestamp, query } from 'firebase/firestore'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
@@ -26,43 +26,44 @@ export function KhataManagement() {
 
 
   useEffect(() => {
-    // Only admins should be able to view this component's data
     if (userRole !== 'admin') {
-      setLoading(false)
+      setLoading(false);
       return;
     }
 
-    setLoading(true)
-    const usersUnsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
-      const usersList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as UserProfile)
-      setUsers(usersList)
+    setLoading(true);
+
+    const usersQuery = collection(db, 'users');
+    const usersUnsubscribe = onSnapshot(usersQuery, (snapshot) => {
+      const usersList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as UserProfile);
+      setUsers(usersList);
     }, (error) => {
-      console.error("Khata User Fetch Error:", error)
-      setLoading(false)
+      console.error("Khata User Fetch Error:", error);
     });
 
-    const ordersUnsubscribe = onSnapshot(collection(db, 'orders'), (snapshot) => {
+    const ordersQuery = collection(db, 'orders');
+    const ordersUnsubscribe = onSnapshot(ordersQuery, (snapshot) => {
       const ordersList = snapshot.docs.map(doc => {
-        const data = doc.data()
+        const data = doc.data();
         return {
           ...data,
           id: doc.id,
           date: (data.date as Timestamp)?.toDate().toISOString() || new Date().toISOString(),
-        } as Order
-      })
-      ordersList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      setOrders(ordersList)
-      setLoading(false)
+        } as Order;
+      });
+      ordersList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setOrders(ordersList);
+      setLoading(false);
     }, (error) => {
-        console.error("Khata Order Fetch Error:", error)
-        setLoading(false)
+      console.error("Khata Order Fetch Error:", error);
+      setLoading(false);
     });
 
     return () => {
-      usersUnsubscribe()
-      ordersUnsubscribe()
-    }
-  }, [userRole])
+      usersUnsubscribe();
+      ordersUnsubscribe();
+    };
+  }, [userRole]);
 
   const ordersWithUsers = useMemo<OrderWithUser[]>(() => {
     const userMap = new Map(users.map(user => [user.userId, user]))

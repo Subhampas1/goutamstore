@@ -47,18 +47,15 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (isClient) {
-      if (!isAuthenticated) {
-        router.push('/login')
-        return
-      }
-      if (userRole !== 'admin') {
-        router.push('/')
-        return
+      if (!isAuthenticated || userRole !== 'admin') {
+        router.push('/login');
+        return;
       }
 
-      setLoading(true)
-      // Fetch users - only admins can do this based on rules
-      const usersUnsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
+      setLoading(true);
+      
+      const usersQuery = collection(db, 'users');
+      const usersUnsubscribe = onSnapshot(usersQuery, (snapshot) => {
         const usersList = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -73,26 +70,26 @@ export default function AdminDashboardPage() {
         }
       });
 
-      // Fetch products
-      const productsUnsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const productsQuery = collection(db, 'products');
+      const productsUnsubscribe = onSnapshot(productsQuery, (snapshot) => {
         const productsList = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         } as Product));
         setProducts(productsList);
-        setLoading(false)
+        setLoading(false);
       }, (error) => {
         console.error("Error fetching products: ", error);
         toast({ title: "Error", description: "Failed to fetch products.", variant: "destructive" })
-        setLoading(false)
+        setLoading(false);
       });
 
       return () => {
         usersUnsubscribe();
         productsUnsubscribe();
-      }
+      };
     }
-  }, [isAuthenticated, userRole, router, isClient, toast])
+  }, [isAuthenticated, userRole, router, isClient, toast]);
 
   const handleUserStatusToggle = async (userId: string, isDisabled: boolean) => {
     if (userId === currentUserId) {
@@ -253,7 +250,7 @@ export default function AdminDashboardPage() {
             <CardDescription>View and manage all registered users.</CardDescription>
           </CardHeader>
           <CardContent>
-            {loading && users.length === 0 ? (
+            {loading ? (
               <p>Loading users...</p>
             ) : (
               <Table>
