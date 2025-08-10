@@ -8,11 +8,10 @@
       "**/node_modules/**"
     ],
     "frameworksBackend": {
-      "id": "goutam-store"
+      "id": "goutam-store-3uiby"
     }
   },
   "firestore": {
     "rules": "firestore.rules"
   }
 }
-
