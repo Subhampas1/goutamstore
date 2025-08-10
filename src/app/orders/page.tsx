@@ -66,6 +66,8 @@ export default function OrdersPage() {
     switch (status) {
       case 'Paid':
         return 'default'
+      case 'Cash':
+        return 'default'
       case 'Delivered':
         return 'default'
       case 'Shipped':

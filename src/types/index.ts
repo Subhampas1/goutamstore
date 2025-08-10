@@ -33,7 +33,7 @@ export type Order = {
   orderId: string; // Human-readable order ID
   userId: string;
   date: string; // ISO string date
-  status: 'Paid' | 'Pending' | 'Shipped' | 'Delivered';
+  status: 'Paid' | 'Pending' | 'Shipped' | 'Delivered' | 'Cash';
   total: number;
   items: OrderItem[];
   paymentDetails?: {
@@ -56,3 +56,4 @@ export interface UserProfile {
     
 
     
+

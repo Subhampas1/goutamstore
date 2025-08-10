@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { Trash2, ShoppingBag, Plus, Minus } from 'lucide-react'
+import { Trash2, ShoppingBag, Plus, Minus, CreditCard, Wallet } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 import type { Product } from '@/types'
@@ -28,7 +28,7 @@ export default function CartPage() {
   const { cart, language, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCartStore()
   const { toast } = useToast()
   const router = useRouter()
-  const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false);
   
   // Load the Razorpay script
   useEffect(() => {
@@ -42,7 +42,59 @@ export default function CartPage() {
     };
   }, []);
 
-  const handleCheckout = async () => {
+  const handleCashCheckout = async () => {
+    if (!auth.currentUser) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to place an order.",
+        variant: "destructive",
+      })
+      router.push('/login');
+      return;
+    }
+
+    setIsProcessing(true);
+    const orderId = nanoid(10);
+
+    try {
+        const orderData = {
+            orderId: orderId,
+            userId: auth.currentUser?.uid,
+            items: cart.map(item => ({
+                product: item.product,
+                quantity: item.quantity
+            })),
+            total: getCartTotal(),
+            status: 'Cash' as const, // Set status to Cash
+            date: serverTimestamp(),
+            paymentDetails: {
+                provider: 'Cash',
+                paymentId: 'N/A',
+            }
+        };
+
+        await addDoc(collection(db, "orders"), orderData);
+
+        toast({
+            title: language === 'en' ? 'Order Placed Successfully' : 'ऑर्डर सफलतापूर्वक दिया गया',
+            description: language === 'en' ? 'Your cash order has been placed.' : 'आपका कैश ऑर्डर दे दिया गया है।',
+        });
+
+        clearCart();
+        router.push('/orders');
+    } catch (error) {
+        console.error("Cash order save error:", error);
+        toast({
+            title: "Order Failed",
+            description: "Could not save your cash order. Please contact support.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsProcessing(false);
+    }
+  };
+
+  const handleRazorpayCheckout = async () => {
     if (!auth.currentUser) {
       toast({
         title: "Authentication Required",
@@ -64,7 +116,7 @@ export default function CartPage() {
       return;
     }
 
-    setIsCheckingOut(true);
+    setIsProcessing(true);
     const orderId = nanoid(10);
 
     const options = {
@@ -110,7 +162,7 @@ export default function CartPage() {
               variant: "destructive",
             });
         } finally {
-            setIsCheckingOut(false);
+            setIsProcessing(false);
         }
       },
       prefill: {
@@ -123,7 +175,7 @@ export default function CartPage() {
       modal: {
         ondismiss: function() {
           // This function is called when the user closes the modal
-          setIsCheckingOut(false);
+          setIsProcessing(false);
           toast({
             title: "Payment Cancelled",
             description: "You can complete your purchase anytime from the cart.",
@@ -260,9 +312,14 @@ export default function CartPage() {
                 <span>₹{getCartTotal().toFixed(2)}</span>
               </div>
             </CardContent>
-            <CardFooter>
-              <Button className="w-full" onClick={handleCheckout} disabled={getCartTotal() <= 0 || isCheckingOut}>
-                {isCheckingOut ? (language === 'en' ? 'Processing...' : 'प्रोसेस हो रहा है...') : (language === 'en' ? 'Proceed to Checkout' : 'चेकआउट के लिए आगे बढ़ें')}
+            <CardFooter className="flex flex-col gap-2">
+              <Button className="w-full" onClick={handleRazorpayCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
+                <CreditCard />
+                {isProcessing ? (language === 'en' ? 'Processing...' : 'प्रोसेस हो रहा है...') : (language === 'en' ? 'Pay Online' : 'ऑनलाइन भुगतान करें')}
+              </Button>
+              <Button variant="secondary" className="w-full" onClick={handleCashCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
+                <Wallet />
+                {isProcessing ? (language === 'en' ? 'Placing Order...' : 'आर्डर दिया जा रहा है...') : (language === 'en' ? 'Pay by Cash' : 'नकद द्वारा भुगतान')}
               </Button>
             </CardFooter>
           </Card>
