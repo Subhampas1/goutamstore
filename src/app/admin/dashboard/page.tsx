@@ -15,9 +15,10 @@ import { Button } from '@/components/ui/button'
 import { ProductForm } from '@/components/products/product-form'
 import type { Product } from '@/types'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
-import { Pencil, Trash2, PlusCircle } from 'lucide-react'
+import { Pencil, Trash2, PlusCircle, Search } from 'lucide-react'
 import { KhataManagement } from '@/app/admin/khata-management'
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
+import { Input } from '@/components/ui/input'
 
 interface User {
   id: string;
@@ -39,6 +40,7 @@ export default function AdminDashboardPage() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [hasAccess, setHasAccess] = useState<boolean | null>(null)
+  const [productSearchTerm, setProductSearchTerm] = useState('');
 
   const { toast } = useToast()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
@@ -100,6 +102,18 @@ export default function AdminDashboardPage() {
   const productCategories = useMemo(() => {
     return [...new Set(products.map(p => p.category))];
   }, [products]);
+
+  const filteredProducts = useMemo(() => {
+    if (!productSearchTerm) {
+      return products;
+    }
+    const lowercasedTerm = productSearchTerm.toLowerCase();
+    return products.filter(product => 
+        product.name.en.toLowerCase().includes(lowercasedTerm) ||
+        product.name.hi.toLowerCase().includes(lowercasedTerm) ||
+        product.category.toLowerCase().includes(lowercasedTerm)
+    );
+  }, [products, productSearchTerm]);
 
 
   const handleUserStatusToggle = async (userId: string, isDisabled: boolean) => {
@@ -198,12 +212,24 @@ export default function AdminDashboardPage() {
         <KhataManagement />
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-              <div>
+          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex-1">
                 <CardTitle>Product Management</CardTitle>
                 <CardDescription>Add, edit, or remove products from your store.</CardDescription>
               </div>
-              <Button onClick={handleAddProduct}><PlusCircle />Add Product</Button>
+              <div className="flex w-full md:w-auto items-center gap-2">
+                <div className="relative flex-1 md:flex-none">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Search by name or category..."
+                        value={productSearchTerm}
+                        onChange={(e) => setProductSearchTerm(e.target.value)}
+                        className="pl-10 w-full"
+                    />
+                </div>
+                <Button onClick={handleAddProduct}><PlusCircle />Add Product</Button>
+            </div>
           </CardHeader>
           <CardContent>
              {loading ? <p>Loading products...</p> : (
@@ -217,7 +243,7 @@ export default function AdminDashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {products.map((product) => (
+                  {filteredProducts.map((product) => (
                     <TableRow key={product.id}>
                       <TableCell className="font-medium">{product.name.en}</TableCell>
                       <TableCell>₹{product.price.toFixed(2)}</TableCell>
