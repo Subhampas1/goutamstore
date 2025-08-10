@@ -90,7 +90,6 @@ export default function CartPage() {
               paymentDetails: {
                   provider: 'Razorpay',
                   paymentId: response.razorpay_payment_id,
-                  signature: response.razorpay_signature,
               }
           };
 
