@@ -233,8 +233,7 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
              {loading ? <p>Loading products...</p> : (
-               <div className="relative w-full overflow-auto">
-                 <Table>
+               <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
@@ -246,8 +245,8 @@ export default function AdminDashboardPage() {
                   <TableBody>
                     {filteredProducts.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell className="font-medium whitespace-nowrap">{product.name.en}</TableCell>
-                        <TableCell className="whitespace-nowrap">₹{product.price.toFixed(2)}</TableCell>
+                        <TableCell className="font-medium">{product.name.en}</TableCell>
+                        <TableCell>₹{product.price.toFixed(2)}</TableCell>
                         <TableCell>
                            <Switch
                                 id={`product-status-${product.id}`}
@@ -256,7 +255,7 @@ export default function AdminDashboardPage() {
                                 aria-label="Toggle product status"
                               />
                         </TableCell>
-                        <TableCell className="text-right space-x-2 whitespace-nowrap">
+                        <TableCell className="text-right space-x-2">
                             <Button variant="outline" size="icon" onClick={() => handleEditProduct(product)}>
                               <Pencil className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
@@ -288,7 +287,6 @@ export default function AdminDashboardPage() {
                     ))}
                   </TableBody>
                 </Table>
-               </div>
              )}
           </CardContent>
         </Card>
@@ -302,7 +300,6 @@ export default function AdminDashboardPage() {
             {loading ? (
               <p>Loading users...</p>
             ) : (
-              <div className="relative w-full overflow-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -315,15 +312,15 @@ export default function AdminDashboardPage() {
                   <TableBody>
                     {users.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell className="font-medium whitespace-nowrap">{user.name}</TableCell>
-                        <TableCell className="whitespace-nowrap">{user.email}</TableCell>
+                        <TableCell className="font-medium">{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
                         <TableCell>
                           <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
                             {user.role}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-2">
                              <Switch
                                 id={`status-${user.id}`}
                                 checked={!user.disabled}
@@ -337,7 +334,6 @@ export default function AdminDashboardPage() {
                     ))}
                   </TableBody>
                 </Table>
-              </div>
             )}
           </CardContent>
         </Card>
