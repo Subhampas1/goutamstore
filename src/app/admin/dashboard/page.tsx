@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/hooks/use-cart-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { db, auth } from '@/lib/firebase'
-import { collection, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
+import { collection, doc, updateDoc, deleteDoc, onSnapshot, getDoc } from 'firebase/firestore'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
@@ -17,7 +17,7 @@ import type { Product } from '@/types'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Pencil, Trash2, PlusCircle } from 'lucide-react'
 import { KhataManagement } from '@/app/admin/khata-management'
-import { onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
 
 interface User {
   id: string;
@@ -29,7 +29,7 @@ interface User {
 
 export default function AdminDashboardPage() {
   const router = useRouter()
-  const { userRole, isAuthenticated } = useCartStore()
+  const { isAuthenticated } = useCartStore()
   const [isClient, setIsClient] = useState(false)
   
   const [users, setUsers] = useState<User[]>([])
@@ -38,6 +38,7 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
 
   const { toast } = useToast()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
@@ -49,60 +50,52 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (!isClient) return;
 
-    // Use onAuthStateChanged to ensure Firebase auth state is initialized
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // User is signed in.
-        setCurrentUserId(user.uid)
-        
-        if (userRole !== 'admin') {
-          toast({ title: "Access Denied", description: "You must be an admin to view this page.", variant: "destructive" })
-          router.push('/login');
-          return;
-        }
-
         setLoading(true);
+        setCurrentUserId(user.uid);
 
-        // Fetch users
-        const usersQuery = collection(db, 'users');
-        const usersUnsubscribe = onSnapshot(usersQuery, (snapshot) => {
-          const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
-          setUsers(usersList);
-        }, (error) => {
-          console.error("Error fetching users: ", error);
-          toast({ title: "Permission Denied", description: "You do not have permission to view users.", variant: "destructive" })
-        });
+        // Fetch user's role directly to determine access
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
 
-        // Fetch products
-        const productsQuery = collection(db, 'products');
-        const productsUnsubscribe = onSnapshot(productsQuery, (snapshot) => {
-          const productsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-          setProducts(productsList);
+        if (userDoc.exists() && userDoc.data().role === 'admin') {
+          setHasAccess(true);
+
+          // User is an admin, proceed to fetch data
+          const usersUnsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
+            const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+            setUsers(usersList);
+          });
+
+          const productsUnsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
+            const productsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+            setProducts(productsList);
+          });
+          
           setLoading(false);
-        }, (error) => {
-          console.error("Error fetching products: ", error);
-          toast({ title: "Error", description: "Failed to fetch products.", variant: "destructive" })
+
+          return () => {
+            usersUnsubscribe();
+            productsUnsubscribe();
+          };
+        } else {
+          // Not an admin
+          setHasAccess(false);
           setLoading(false);
-        });
-
-        // Return cleanup function for snapshots
-        return () => {
-          usersUnsubscribe();
-          productsUnsubscribe();
-        };
-
-      } else {
-        // User is signed out.
-        if (isAuthenticated) { // only redirect if they were previously logged in
-             router.push('/login');
+          toast({ title: "Access Denied", description: "You must be an admin to view this page.", variant: "destructive" });
+          router.push('/');
         }
+      } else {
+        // No user is signed in
+        setHasAccess(false);
         setLoading(false);
+        router.push('/login');
       }
     });
 
-    // Return cleanup function for onAuthStateChanged
     return () => unsubscribe();
-  }, [isClient, userRole, router, toast, isAuthenticated]);
+  }, [isClient, router, toast]);
 
 
   const handleUserStatusToggle = async (userId: string, isDisabled: boolean) => {
@@ -165,7 +158,7 @@ export default function AdminDashboardPage() {
     }
   };
 
-  if (!isClient || loading) {
+  if (!isClient || loading || hasAccess === null) {
     return (
         <div className="flex items-center justify-center min-h-[calc(100vh-14rem)]">
             <p>Loading or redirecting...</p>
@@ -173,10 +166,10 @@ export default function AdminDashboardPage() {
     )
   }
   
-  if (!isAuthenticated || userRole !== 'admin') {
+  if (!hasAccess) {
      return (
         <div className="flex items-center justify-center min-h-[calc(100vh-14rem)]">
-            <p>Redirecting to login...</p>
+            <p>Access Denied. Redirecting...</p>
         </div>
     )
   }
