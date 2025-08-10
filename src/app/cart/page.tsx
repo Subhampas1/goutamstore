@@ -313,16 +313,16 @@ export default function CartPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-row items-center gap-3">
-               <Button className="h-12 rounded-full w-full" onClick={handleRazorpayCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
+              <Button variant="secondary" className="h-12 rounded-full w-full" onClick={handleCashCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
+                <Wallet />
+                {isProcessing ? (language === 'en' ? 'Placing Order...' : 'आर्डर दिया जा रहा है...') : (language === 'en' ? 'Pay by Cash' : 'नकद द्वारा भुगतान')}
+              </Button>
+              <Button className="h-12 rounded-full w-full" onClick={handleRazorpayCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
                 {isProcessing ? (
                     <span>{language === 'en' ? 'Processing...' : 'प्रोसेस हो रहा है...'}</span>
                 ) : (
                    <span className="font-semibold">Gpay | PhonePe</span>
                 )}
-              </Button>
-              <Button variant="secondary" className="h-12 rounded-full w-full" onClick={handleCashCheckout} disabled={getCartTotal() <= 0 || isProcessing}>
-                <Wallet />
-                {isProcessing ? (language === 'en' ? 'Placing Order...' : 'आर्डर दिया जा रहा है...') : (language === 'en' ? 'Pay by Cash' : 'नकद द्वारा भुगतान')}
               </Button>
             </CardFooter>
           </Card>
