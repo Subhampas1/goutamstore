@@ -15,6 +15,10 @@ import type { Product } from '@/types'
 import { useEffect, useState } from 'react'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import { Switch } from '../ui/switch'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const productSchema = z.object({
   name_en: z.string().min(2, 'English name must be at least 2 characters.'),
@@ -34,11 +38,13 @@ interface ProductFormProps {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
   product?: Product | null
+  categories: string[]
 }
 
-export function ProductForm({ isOpen, setIsOpen, product }: ProductFormProps) {
+export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductFormProps) {
   const { toast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -173,17 +179,78 @@ export function ProductForm({ isOpen, setIsOpen, product }: ProductFormProps) {
                     </FormItem>
                 )}
                 />
-             <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl><Input placeholder="e.g., Aata/Maida/Besan" {...field} /></FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Category</FormLabel>
+                   <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full justify-between",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? categories.find(
+                                (category) => category === field.value
+                              )
+                            : "Select or create a category"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                      <Command>
+                        <CommandInput 
+                            placeholder="Search or create category..." 
+                            onValueChange={(search) => {
+                                // Allow creating a new category by typing
+                                if(!categories.includes(search)) {
+                                    form.setValue("category", search)
+                                }
+                            }}
+                        />
+                        <CommandList>
+                            <CommandEmpty>No category found.</CommandEmpty>
+                            <CommandGroup>
+                            {categories.map((category) => (
+                                <CommandItem
+                                value={category}
+                                key={category}
+                                onSelect={() => {
+                                    form.setValue("category", category)
+                                    setIsPopoverOpen(false)
+                                }}
+                                >
+                                <Check
+                                    className={cn(
+                                    "mr-2 h-4 w-4",
+                                    category === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                />
+                                {category}
+                                </CommandItem>
+                            ))}
+                            </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>
+                    Select an existing category or type a new one.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
                 control={form.control}
                 name="unit"

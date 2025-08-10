@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/hooks/use-cart-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -97,6 +97,10 @@ export default function AdminDashboardPage() {
     return () => unsubscribe();
   }, [isClient, router, toast]);
 
+  const productCategories = useMemo(() => {
+    return [...new Set(products.map(p => p.category))];
+  }, [products]);
+
 
   const handleUserStatusToggle = async (userId: string, isDisabled: boolean) => {
     if (userId === currentUserId) {
@@ -181,6 +185,7 @@ export default function AdminDashboardPage() {
         isOpen={isFormOpen}
         setIsOpen={setIsFormOpen}
         product={selectedProduct}
+        categories={productCategories}
       />
       <div className="grid gap-6">
         <Card>
