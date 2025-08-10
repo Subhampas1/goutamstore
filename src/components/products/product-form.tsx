@@ -45,7 +45,6 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
   const { toast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const [newCategoryValue, setNewCategoryValue] = useState('');
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -90,7 +89,6 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
         })
         }
         setIsSaving(false)
-        setNewCategoryValue('')
     }
   }, [product, form, isOpen])
 
@@ -206,34 +204,35 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                       <Command>
+                       <Command
+                        filter={(value, search) => {
+                          if (value.toLowerCase().includes(search.toLowerCase())) return 1
+                          return 0
+                        }}
+                       >
                         <CommandInput
                           placeholder="Search or create category..."
-                          value={newCategoryValue}
-                          onValueChange={setNewCategoryValue}
                           onKeyDown={(e) => {
-                             if (e.key === 'Enter' && newCategoryValue && !categories.find(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) {
+                             if (e.key === 'Enter') {
                               e.preventDefault();
-                              form.setValue("category", newCategoryValue);
-                              setIsPopoverOpen(false);
+                              const newCategoryValue = e.currentTarget.value;
+                              if (newCategoryValue && !categories.find(cat => cat.toLowerCase() === newCategoryValue.toLowerCase())) {
+                                form.setValue("category", newCategoryValue);
+                                setIsPopoverOpen(false);
+                              }
                             }
                           }}
                         />
                         <CommandList>
-                            <CommandEmpty onSelect={() => {
-                                form.setValue("category", newCategoryValue);
-                                setIsPopoverOpen(false);
-                            }}>
-                                {`No category found. Press Enter to create "${newCategoryValue}".`}
-                            </CommandEmpty>
+                            <CommandEmpty>No category found. Press Enter to create.</CommandEmpty>
                             <CommandGroup>
                             {categories.map((category) => (
                                 <CommandItem
                                 value={category}
                                 key={category}
-                                onSelect={() => {
-                                    form.setValue("category", category);
-                                    setIsPopoverOpen(false);
+                                onSelect={(currentValue) => {
+                                    form.setValue("category", currentValue === field.value ? "" : currentValue)
+                                    setIsPopoverOpen(false)
                                 }}
                                 >
                                 <Check
@@ -352,5 +351,3 @@ export function ProductForm({ isOpen, setIsOpen, product, categories }: ProductF
     </Dialog>
   )
 }
-
-    
