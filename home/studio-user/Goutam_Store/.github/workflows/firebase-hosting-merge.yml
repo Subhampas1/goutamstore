@@ -22,4 +22,6 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOUTAM_STORE }}'
           channelId: live
           projectId: goutam-store-3uiby
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
 

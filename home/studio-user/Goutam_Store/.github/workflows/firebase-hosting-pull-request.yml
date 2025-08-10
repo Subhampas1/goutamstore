@@ -20,4 +20,6 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_GOUTAM_STORE }}'
           projectId: goutam-store-3uiby
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
 
