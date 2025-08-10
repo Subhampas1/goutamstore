@@ -313,7 +313,7 @@ export default function ProfilePage() {
               </form>
             </Form>
             
-            <div className="flex flex-col sm:flex-row gap-2 w-full pt-4">
+            <div className="flex gap-2 w-full pt-4">
                 {!isEditing && (
                     <Button variant="outline" className="w-full" onClick={() => setIsEditing(true)}>
                         <Pencil /> Edit Profile
