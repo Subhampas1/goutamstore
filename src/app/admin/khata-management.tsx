@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Separator } from '@/components/ui/separator'
+import { useCartStore } from '@/hooks/use-cart-store'
 
 interface OrderWithUser extends Order {
   user?: UserProfile;
@@ -21,13 +22,24 @@ export function KhataManagement() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const userRole = useCartStore(state => state.userRole)
+
 
   useEffect(() => {
+    // Only admins should be able to view this component's data
+    if (userRole !== 'admin') {
+      setLoading(false)
+      return;
+    }
+
     setLoading(true)
     const usersUnsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
       const usersList = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as UserProfile)
       setUsers(usersList)
-    })
+    }, (error) => {
+      console.error("Khata User Fetch Error:", error)
+      setLoading(false)
+    });
 
     const ordersUnsubscribe = onSnapshot(collection(db, 'orders'), (snapshot) => {
       const ordersList = snapshot.docs.map(doc => {
@@ -41,13 +53,16 @@ export function KhataManagement() {
       ordersList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       setOrders(ordersList)
       setLoading(false)
-    })
+    }, (error) => {
+        console.error("Khata Order Fetch Error:", error)
+        setLoading(false)
+    });
 
     return () => {
       usersUnsubscribe()
       ordersUnsubscribe()
     }
-  }, [])
+  }, [userRole])
 
   const ordersWithUsers = useMemo<OrderWithUser[]>(() => {
     const userMap = new Map(users.map(user => [user.userId, user]))
@@ -119,6 +134,8 @@ export function KhataManagement() {
       <CardContent>
         {loading ? (
           <p>Loading ledger...</p>
+        ) : userRole !== 'admin' ? (
+          <p className="text-destructive">You do not have permission to view this section.</p>
         ) : (
           <Tabs defaultValue="user">
             <div className="flex justify-between items-center mb-4">

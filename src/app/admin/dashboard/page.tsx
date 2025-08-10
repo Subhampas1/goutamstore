@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/hooks/use-cart-store'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { db, auth } from '@/lib/firebase'
-import { collection, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
+import { collection, doc, updateDoc, deleteDoc, onSnapshot, query, where, getDocs } from 'firebase/firestore'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
@@ -57,7 +57,7 @@ export default function AdminDashboardPage() {
       }
 
       setLoading(true)
-      // Fetch users
+      // Fetch users - only admins can do this based on rules
       const usersUnsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
         const usersList = snapshot.docs.map(doc => ({
           id: doc.id,
@@ -66,7 +66,11 @@ export default function AdminDashboardPage() {
         setUsers(usersList);
       }, (error) => {
         console.error("Error fetching users: ", error);
-        toast({ title: "Error", description: "Failed to fetch users.", variant: "destructive" })
+        if (error.code === 'permission-denied') {
+             toast({ title: "Permission Denied", description: "You do not have permission to view users.", variant: "destructive" })
+        } else {
+             toast({ title: "Error", description: "Failed to fetch users.", variant: "destructive" })
+        }
       });
 
       // Fetch products
@@ -249,7 +253,7 @@ export default function AdminDashboardPage() {
             <CardDescription>View and manage all registered users.</CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
+            {loading && users.length === 0 ? (
               <p>Loading users...</p>
             ) : (
               <Table>
