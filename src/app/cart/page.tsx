@@ -139,18 +139,8 @@ export default function CartPage() {
       }
     };
 
-    try {
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Razorpay Error: ", error);
-      toast({
-        title: "Payment Error",
-        description: "Failed to initialize payment gateway. Please try again.",
-        variant: "destructive"
-      });
-      setIsCheckingOut(false);
-    }
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
   
   const handleQuantityChange = (productId: string, unit: Product['unit'], value: string) => {

@@ -99,6 +99,9 @@ export function KhataManagement() {
   }, [ordersWithUsers])
   
   const filteredUsers = useMemo(() => {
+    if (!searchTerm) {
+      return ordersGroupedByUser;
+    }
     return ordersGroupedByUser.filter(([userId, userOrders]) => {
       const user = userOrders[0]?.user;
       return user?.name.toLowerCase().includes(searchTerm.toLowerCase());

@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { db, auth } from '@/lib/firebase'
 import { collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore'
 import type { Order } from '@/types'
+import { onAuthStateChanged } from 'firebase/auth'
 
 export default function OrdersPage() {
   const router = useRouter()
@@ -26,12 +27,7 @@ export default function OrdersPage() {
   
   useEffect(() => {
     if (isClient) {
-      if (!isAuthenticated) {
-        router.push('/login');
-        return;
-      }
-
-      const unsubscribe = auth.onAuthStateChanged(user => {
+      const unsubscribe = onAuthStateChanged(auth, user => {
         if (user) {
           setLoading(true);
           const q = query(
@@ -64,7 +60,7 @@ export default function OrdersPage() {
       });
       return () => unsubscribe();
     }
-  }, [isAuthenticated, router, isClient]);
+  }, [isClient, router]);
 
   const getStatusVariant = (status: Order['status']): "destructive" | "secondary" | "default" | "outline" => {
     switch (status) {
@@ -81,7 +77,7 @@ export default function OrdersPage() {
     }
   }
 
-  if (!isClient || !isAuthenticated) {
+  if (!isClient || loading) {
     return <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-14rem)]">Loading...</div>;
   }
 
@@ -138,5 +134,3 @@ export default function OrdersPage() {
     </div>
   )
 }
-
-    

@@ -41,7 +41,7 @@ export default function InvoicePage() {
           const userRef = doc(db, 'users', orderData.userId);
           const userSnap = await getDoc(userRef);
           if (userSnap.exists()) {
-            setUser(userSnap.data() as UserProfile);
+            setUser({...(userSnap.data() as Omit<UserProfile, 'id'>), id: userSnap.id });
           }
         }
 
@@ -88,9 +88,9 @@ export default function InvoicePage() {
         <CardHeader className="flex flex-col sm:flex-row items-start justify-between gap-4">
           <div className="flex items-center gap-4">
             <svg width="64" height="64" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="40" y="60" width="120" height="100" rx="20" fill="#1676F3"/>
-              <path d="M60 60 A40 40 0 0 1 140 60" fill="none" stroke="#1676F3" strokeWidth="12"/>
-              <text x="100" y="130" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif" fontSize="80" fontWeight="bold" fill="white">G</text>
+              <rect x="40" y="60" width="120" height="100" rx="20" className="fill-primary"/>
+              <path d="M60 60 A40 40 0 0 1 140 60" fill="none" className="stroke-primary" strokeWidth="12"/>
+              <text x="100" y="130" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif" fontSize="80" fontWeight="bold" className="fill-primary-foreground">G</text>
             </svg>
             <div>
               <CardTitle className="font-headline text-3xl">{language === 'en' ? 'Invoice' : 'इनवॉइस'}</CardTitle>

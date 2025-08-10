@@ -55,15 +55,13 @@ export default function KhataPage() {
         });
         return () => unsubFromOrders();
       } else {
-        if(isAuthenticated) { // Only redirect if they were previously logged in
-             router.push('/login')
-        }
+        router.push('/login')
         setOrders([])
         setLoading(false)
       }
     });
     return () => unsubscribe();
-  }, [isAuthenticated, router, isClient])
+  }, [router, isClient])
 
 
   if (!isClient || loading) {
@@ -86,7 +84,7 @@ export default function KhataPage() {
     )
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && isClient) {
      return (
         <div className="flex items-center justify-center min-h-[calc(100vh-14rem)]">
             <p>Redirecting to login...</p>
