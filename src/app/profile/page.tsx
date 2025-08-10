@@ -5,22 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/hooks/use-cart-store'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { LogIn, UserPlus, LogOut, Package, LayoutDashboard, Upload, Pencil } from 'lucide-react'
+import { LogIn, UserPlus, LogOut, Package, LayoutDashboard, Pencil } from 'lucide-react'
 import { ThemeSwitcher } from '@/components/theme-switcher'
-import { auth, db, storage } from '@/lib/firebase'
+import { auth, db } from '@/lib/firebase'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { signOut } from 'firebase/auth'
 import { useToast } from '@/hooks/use-toast'
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Progress } from '@/components/ui/progress'
 import type { UserProfile as UserProfileType } from '@/types'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -40,13 +38,7 @@ export default function ProfilePage() {
   const [userProfile, setUserProfile] = useState<UserProfileType | null>(null)
   const { toast } = useToast()
   
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
-
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -64,9 +56,6 @@ export default function ProfilePage() {
           const profileData = docSnap.data() as UserProfileType
           setUserProfile(profileData);
           form.reset({ name: profileData.name || '', address: profileData.address || '' })
-          if (profileData.photoURL) {
-            setPreviewUrl(profileData.photoURL)
-          }
         }
       } else {
         setUserProfile(null);
@@ -75,13 +64,6 @@ export default function ProfilePage() {
     return () => unsubscribe();
   }, [form])
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      setSelectedFile(file)
-      setPreviewUrl(URL.createObjectURL(file))
-    }
-  }
 
   const handleProfileUpdate = async (values: z.infer<typeof profileSchema>) => {
      if (!auth.currentUser) return;
@@ -107,56 +89,6 @@ export default function ProfilePage() {
            variant: 'destructive',
         })
      }
-  }
-
-  const handleUploadAndSave = async () => {
-    if (!selectedFile || !auth.currentUser) return
-
-    setIsUploading(true)
-    setUploadProgress(0)
-    
-    const storageRef = ref(storage, `profile-pictures/${auth.currentUser.uid}/${selectedFile.name}`)
-    const uploadTask = uploadBytesResumable(storageRef, selectedFile)
-
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        setUploadProgress(progress)
-      },
-      (error) => {
-        console.error("Upload failed:", error);
-        toast({
-          title: 'Upload Failed',
-          description: 'There was an error updating your profile picture.',
-          variant: 'destructive',
-        })
-        setIsUploading(false)
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          try {
-            const userDocRef = doc(db, 'users', auth.currentUser!.uid)
-            await updateDoc(userDocRef, { photoURL: downloadURL })
-            setUserProfile(prev => prev ? { ...prev, photoURL: downloadURL } : null)
-            toast({
-              title: 'Success',
-              description: 'Profile picture updated successfully.',
-            })
-          } catch (dbError) {
-             console.error("Error updating document:", dbError);
-             toast({
-                title: 'Database Error',
-                description: 'Could not save the new profile picture.',
-                variant: 'destructive',
-             })
-          } finally {
-            setIsUploading(false)
-            setSelectedFile(null)
-          }
-        });
-      }
-    );
   }
 
 
@@ -238,38 +170,10 @@ export default function ProfilePage() {
         <CardHeader className="items-center text-center">
           <div className="relative">
             <Avatar className="h-24 w-24 mb-4">
-              <AvatarImage src={previewUrl || userProfile?.photoURL || "https://firebasestorage.googleapis.com/v0/b/goutam-store-3uiby.appspot.com/o/tiger.png?alt=media&token=17565511-3e45-4257-9f20-98b79b69c4e2"} alt="User avatar" data-ai-hint="tiger face" />
+              <AvatarImage src={userProfile?.photoURL || "https://firebasestorage.googleapis.com/v0/b/goutam-store-3uiby.appspot.com/o/tiger.png?alt=media&token=17565511-3e45-4257-9f20-98b79b69c4e2"} alt="User avatar" data-ai-hint="tiger face" />
               <AvatarFallback>{userProfile?.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
-             <Button
-                variant="outline"
-                size="icon"
-                className="absolute bottom-4 right-0 rounded-full"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-              >
-                <Upload className="h-4 w-4" />
-                <span className="sr-only">Upload new picture</span>
-              </Button>
-              <Input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                onChange={handleFileChange}
-                accept="image/*"
-                disabled={isUploading}
-              />
           </div>
-           {isUploading && (
-              <div className="w-full px-4">
-                <Progress value={uploadProgress} className="w-full" />
-              </div>
-           )}
-           {selectedFile && !isUploading && (
-                <Button onClick={handleUploadAndSave} className="w-full" type="button" size="sm">
-                  Save New Photo
-                </Button>
-            )}
         </CardHeader>
         <CardContent className="space-y-4">
              <Form {...form}>
