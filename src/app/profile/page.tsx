@@ -24,6 +24,8 @@ import { Progress } from '@/components/ui/progress'
 import type { UserProfile as UserProfileType } from '@/types'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 
 
 const profileSchema = z.object({
@@ -33,7 +35,7 @@ const profileSchema = z.object({
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { isAuthenticated, logout: storeLogout, userRole } = useCartStore()
+  const { isAuthenticated, logout: storeLogout, userRole, language, toggleLanguage } = useCartStore()
   const [isClient, setIsClient] = useState(false)
   const [userProfile, setUserProfile] = useState<UserProfileType | null>(null)
   const { toast } = useToast()
@@ -216,8 +218,14 @@ export default function ProfilePage() {
                 </Button>
             </CardContent>
              <CardFooter className="flex-col gap-4">
-              <div className="text-sm text-muted-foreground">Appearance</div>
-              <ThemeSwitcher />
+               <div className="flex w-full items-center justify-center gap-4">
+                <div className="flex items-center gap-2">
+                    <Label htmlFor="language-toggle" className="text-sm font-medium">EN</Label>
+                    <Switch id="language-toggle" checked={language === 'hi'} onCheckedChange={toggleLanguage} aria-label="Toggle language"/>
+                    <Label htmlFor="language-toggle" className="text-sm font-medium">HI</Label>
+                </div>
+                <ThemeSwitcher />
+              </div>
             </CardFooter>
           </Card>
         </div>
@@ -330,9 +338,16 @@ export default function ProfilePage() {
               </Button>
             )}
         </CardContent>
-        <CardFooter className="flex items-center justify-between gap-2">
-            <ThemeSwitcher />
-            <Button variant="destructive" className="flex-1 h-12 rounded-full" onClick={handleLogout}>
+        <CardFooter className="flex-col gap-4">
+            <div className="flex w-full items-center justify-center gap-4">
+                <div className="flex items-center gap-2">
+                    <Label htmlFor="language-toggle-profile" className="text-sm font-medium">EN</Label>
+                    <Switch id="language-toggle-profile" checked={language === 'hi'} onCheckedChange={toggleLanguage} aria-label="Toggle language"/>
+                    <Label htmlFor="language-toggle-profile" className="text-sm font-medium">HI</Label>
+                </div>
+                <ThemeSwitcher />
+            </div>
+            <Button variant="destructive" className="w-full h-12 rounded-full" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" /> Logout
             </Button>
         </CardFooter>

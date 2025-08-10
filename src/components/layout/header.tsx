@@ -38,8 +38,8 @@ export function Header() {
         <div className="mr-4 flex md:flex-1">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <svg width="32" height="32" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="40" y="60" width="120" height="100" rx="20" fill="#1676F3"/>
-              <path d="M60 60 A40 40 0 0 1 140 60" fill="none" stroke="#1676F3" strokeWidth="12"/>
+              <rect x="40" y="60" width="120" height="100" rx="20" className="fill-primary"/>
+              <path d="M60 60 A40 40 0 0 1 140 60" fill="none" className="stroke-primary" strokeWidth="12"/>
               <text x="100" y="130" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif" fontSize="80" fontWeight="bold" fill="white">G</text>
             </svg>
             <span className="font-bold font-headline text-lg hidden sm:inline-block">Goutam Store</span>
