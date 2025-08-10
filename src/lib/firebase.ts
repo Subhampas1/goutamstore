@@ -5,16 +5,13 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
-// IMPORTANT: Replace the placeholder values below with the configuration
-// from your new Firebase project that is in a free-tier eligible region.
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "PASTE_YOUR_API_KEY_HERE",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "PASTE_YOUR_AUTH_DOMAIN_HERE",
-  projectId: "goutam-store", 
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "PASTE_YOUR_STORAGE_BUCKET_HERE",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "PASTE_YOUR_MESSAGING_SENDER_ID_HERE",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "PASTE_YOUR_APP_ID_HERE",
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "PASTE_YOUR_MEASUREMENT_ID_HERE",
+  "projectId": "goutam-store-3uiby",
+  "appId": "1:991543455116:web:2a2e0eda4fc3e34bfd3aa9",
+  "storageBucket": "goutam-store-3uiby.appspot.com",
+  "apiKey": "AIzaSyAlO7GrnMDubwsc7GrM2J3a6E8LP7qrGjc",
+  "authDomain": "goutam-store-3uiby.firebaseapp.com",
+  "messagingSenderId": "991543455116"
 };
 
 // Initialize Firebase

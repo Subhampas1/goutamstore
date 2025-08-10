@@ -33,7 +33,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'goutam-store.appspot.com',
+        hostname: 'goutam-store-3uiby.appspot.com',
         port: '',
         pathname: '/**',
       }
