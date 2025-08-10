@@ -7,9 +7,12 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "frameworksBackend": {
-      "id": "goutam-store-3uiby"
-    }
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "goutam-store-3uiby"
+      }
+    ]
   },
   "firestore": {
     "rules": "firestore.rules"
